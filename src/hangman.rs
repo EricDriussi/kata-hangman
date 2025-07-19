@@ -2,11 +2,12 @@ use crate::errors::InitError;
 pub use crate::results::GuessResult;
 use crate::state::GameState;
 use std::collections::{HashMap, HashSet};
+use crate::results::InitResult;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
     word: String,
-    max_failed_guesses: isize,
+    max_failed_guesses: usize,
     failed_guesses: usize,
     guessed_letters: HashSet<char>,
     word_progress: HashMap<char, bool>,
@@ -14,7 +15,7 @@ pub struct Hangman {
 }
 
 impl Hangman {
-    pub fn init(word: &str, max_failed_guesses: isize) -> Result<Self, InitError> {
+    pub fn init(word: &str, max_failed_guesses: usize) -> InitResult {
         if max_failed_guesses < 1 {
             return Err(InitError::NotEnoughGuesses);
         }
@@ -42,7 +43,10 @@ impl Hangman {
     }
 
     pub fn guess(&mut self, letter: char) -> GuessResult {
-        // TODO: what if the game is not in progress?
+        if self.state != GameState::InProgress {
+            return GuessResult::GameNotInProgress;
+        }
+
         if !letter.is_alphabetic() {
             return GuessResult::InvalidCharacter;
         }
@@ -53,12 +57,18 @@ impl Hangman {
             return GuessResult::Duplicate;
         }
 
-        // TODO: should also update game state
         if self.word.contains(upper_letter) {
             self.guessed_letters.insert(upper_letter);
+            self.word_progress.insert(upper_letter, true);
+            if self.word_progress.values().all(|&guessed| guessed) {
+                self.state = GameState::Won;
+            }
             GuessResult::Correct
         } else {
             self.failed_guesses += 1;
+            if self.failed_guesses >= self.max_failed_guesses {
+                self.state = GameState::Lost;
+            }
             GuessResult::Incorrect
         }
     }
