@@ -126,3 +126,24 @@ fn game_is_won_when_all_letters_are_guessed() {
 
     assert!(matches!(game.state(), GameState::Won));
 }
+
+#[test]
+fn word_is_initially_displayed_hiding_all_letters() {
+    let game = Hangman::init("abc", 1).unwrap();
+
+    let word: String = game.display_word();
+
+    assert_eq!(word, "___");
+}
+
+#[test]
+fn word_is_displayed_showing_guessed_letter() {
+    let mut game = Hangman::init("abc", 1).unwrap();
+
+    game.guess('a');
+    game.guess('c');
+
+    let word: String = game.display_word();
+
+    assert_eq!(word, "A_C");
+}

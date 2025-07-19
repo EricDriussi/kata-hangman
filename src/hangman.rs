@@ -1,8 +1,9 @@
 use crate::errors::InitError;
 pub use crate::results::GuessResult;
-use crate::state::GameState;
-use std::collections::{HashMap, HashSet};
 use crate::results::InitResult;
+use crate::state::GameState;
+use indexmap::IndexMap;
+use std::collections::HashSet;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
@@ -10,7 +11,7 @@ pub struct Hangman {
     max_failed_guesses: usize,
     failed_guesses: usize,
     guessed_letters: HashSet<char>,
-    word_progress: HashMap<char, bool>,
+    word_progress: IndexMap<char, bool>,
     state: GameState,
 }
 
@@ -73,16 +74,14 @@ impl Hangman {
         }
     }
 
-    // pub fn display_word(&self) -> String {
-    //     self.secret_word
-    //         .chars()
-    //         .map(|c| {
-    //             if *self.revealed_word_state.get(&c).unwrap_or(&false) {
-    //                 c
-    //             } else {
-    //                 '_'
-    //             }
-    //         })
-    //         .collect()
-    // }
+    pub fn display_word(&self) -> String {
+        self.word_progress
+            .iter()
+            .map(Self::non_guessed_chars_as_underscore())
+            .collect()
+    }
+
+    fn non_guessed_chars_as_underscore() -> fn((&char, &bool)) -> char {
+        |(&char, &guessed)| if guessed { char } else { '_' }
+    }
 }
