@@ -13,3 +13,6 @@ module_name_repetitions = "allow"
 must_use_candidate = "allow"
 missing_errors_doc = "allow"
 unwrap_used = "warn"
+
+[dev-dependencies]
+rstest = "0.25.0"

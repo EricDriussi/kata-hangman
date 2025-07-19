@@ -10,7 +10,7 @@ pub struct Hangman {
     incorrect_guesses: HashSet<char>,
     guessed_letters: HashSet<char>,
     revealed_word_state: HashMap<char, bool>,
-    game_state: GameState,
+    state: GameState,
 }
 
 impl Hangman {
@@ -33,27 +33,22 @@ impl Hangman {
             incorrect_guesses: HashSet::new(),
             guessed_letters: HashSet::new(),
             revealed_word_state: secret_word.chars().map(|ch| (ch, false)).collect(),
-            game_state: GameState::InProgress,
+            state: GameState::InProgress,
         })
     }
 
-    // TODO: Don't trust AI
-    // pub fn is_in_progress(&self) -> bool {
-    //     self.game_state == GameState::InProgress
-    // }
-    // 
-    // pub fn game_state(&self) -> GameState {
-    //     self.game_state
-    // }
-    // 
+    pub fn state(&self) -> GameState {
+        self.state
+    }
+
     // pub fn incorrect_guesses_count(&self) -> usize {
     //     self.incorrect_guesses.len()
     // }
-    // 
+    //
     // pub fn get_incorrect_guesses(&self) -> &HashSet<char> {
     //     &self.incorrect_guesses
     // }
-    // 
+    //
     // pub fn display_word(&self) -> String {
     //     self.secret_word
     //         .chars()
@@ -66,7 +61,7 @@ impl Hangman {
     //         })
     //         .collect()
     // }
-    // 
+    //
     // pub fn guess(&mut self, letter: char) -> GuessResult {
     //     if !self.is_in_progress() {
     //         return GuessResult::Duplicate; // Or a specific "GameEnded" result, depending on desired behavior
