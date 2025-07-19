@@ -6,14 +6,14 @@ use std::collections::{HashMap, HashSet};
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
     word: String,
-    max_failed_guesses: usize,
+    max_failed_guesses: isize,
     guessed_letters: HashSet<char>,
     word_progress: HashMap<char, bool>,
     state: GameState,
 }
 
 impl Hangman {
-    pub fn init(word: &str, max_failed_guesses: usize) -> Result<Self, InitError> {
+    pub fn init(word: &str, max_failed_guesses: isize) -> Result<Self, InitError> {
         if max_failed_guesses < 1 {
             return Err(InitError::NotEnoughGuesses);
         }

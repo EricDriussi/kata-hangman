@@ -3,33 +3,36 @@ use hangman::errors::InitError;
 use hangman::hangman::Hangman;
 use hangman::state::GameState;
 
-const VALID_GUESS_LIMIT: usize = 1;
+const VALID_MAX_FAILED_GUESSES: isize = 1;
 const VALID_WORD: &str = "aWord";
 
 #[test]
 fn starts_with_valid_word_and_limit() {
-    let game = Hangman::init(VALID_WORD, VALID_GUESS_LIMIT);
+    let game = Hangman::init(VALID_WORD, VALID_MAX_FAILED_GUESSES);
 
     assert!(game.is_ok());
 }
 
 #[test]
 fn starts_with_in_progress_state() {
-    let game = Hangman::init(VALID_WORD, VALID_GUESS_LIMIT);
+    let game = Hangman::init(VALID_WORD, VALID_MAX_FAILED_GUESSES);
 
     assert!(game.is_ok_and(|g| g.state() == GameState::InProgress));
 }
 
-#[test]
-fn does_not_init_with_less_than_1_incorrect_guess_limit() {
-    let game = Hangman::init(VALID_WORD, 0);
+#[rstest]
+#[case(0)]
+#[case(-1)]
+#[case(-2)]
+fn does_not_init_with_invalid_max_failed_guesses(#[case] invalid_max_failed_guesses: isize) {
+    let game = Hangman::init(VALID_WORD, invalid_max_failed_guesses);
 
     assert!(game.is_err_and(|e| matches!(e, InitError::NotEnoughGuesses)));
 }
 
 #[test]
-fn does_not_init_without_secret_word() {
-    let game = Hangman::init("", VALID_GUESS_LIMIT);
+fn does_not_init_without_word() {
+    let game = Hangman::init("", VALID_MAX_FAILED_GUESSES);
 
     assert!(game.is_err_and(|e| matches!(e, InitError::EmptySecretWord)));
 }
@@ -41,9 +44,9 @@ fn does_not_init_without_secret_word() {
 #[case("#")]
 #[case(".")]
 #[case("-")]
-fn does_not_init_with_invalid_characters(#[case] invalid_char: &str) {
+fn does_not_init_with_invalid_characters_in_word(#[case] invalid_char: &str) {
     let invalid_word = format!("a{}Word", invalid_char);
-    let game = Hangman::init(&invalid_word, VALID_GUESS_LIMIT);
+    let game = Hangman::init(&invalid_word, VALID_MAX_FAILED_GUESSES);
 
     assert!(game.is_err_and(|e| matches!(e, InitError::NonAlphabeticCharacters)));
 }
