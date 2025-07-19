@@ -1,5 +1,5 @@
 use crate::errors::InitError;
-// use crate::results::GuessResult;
+pub use crate::results::GuessResult;
 use crate::state::GameState;
 use std::collections::{HashMap, HashSet};
 
@@ -41,14 +41,28 @@ impl Hangman {
         self.state
     }
 
-    // pub fn incorrect_guesses_count(&self) -> usize {
-    //     self.incorrect_guesses.len()
-    // }
-    //
-    // pub fn get_incorrect_guesses(&self) -> &HashSet<char> {
-    //     &self.incorrect_guesses
-    // }
-    //
+    pub fn guess(&mut self, letter: char) -> GuessResult {
+        // TODO: what if the game is not in progress?
+        if !letter.is_alphabetic() {
+            return GuessResult::InvalidCharacter;
+        }
+
+        let upper_letter = letter.to_uppercase().next().unwrap_or(letter);
+
+        if self.guessed_letters.contains(&upper_letter) {
+            return GuessResult::Duplicate;
+        }
+
+        // TODO: should also update game state
+        if self.word.contains(upper_letter) {
+            self.guessed_letters.insert(upper_letter);
+            GuessResult::Correct
+        } else {
+            self.failed_guesses += 1;
+            GuessResult::Incorrect
+        }
+    }
+
     // pub fn display_word(&self) -> String {
     //     self.secret_word
     //         .chars()
@@ -60,47 +74,5 @@ impl Hangman {
     //             }
     //         })
     //         .collect()
-    // }
-
-    // pub fn guess(&mut self, letter: char) -> GuessResult {
-    //     if self.state != GameState::InProgress {
-    //         return GuessResult::Duplicate; // Or a specific "GameEnded" result, depending on desired behavior
-    //     }
-    //
-    //     let upper_letter = letter.to_ascii_uppercase();
-    //
-    //     if !upper_letter.is_ascii_alphabetic() {
-    //         return GuessResult::InvalidCharacter;
-    //     }
-    //
-    //     if self.guessed_letters.contains(&upper_letter) {
-    //         return GuessResult::Duplicate;
-    //     }
-    //
-    //     self.guessed_letters.insert(upper_letter);
-    //
-    //     if self.word.contains(upper_letter) {
-    //         self.word_progress.insert(upper_letter, true);
-    //         self.check_game_state();
-    //         GuessResult::Correct
-    //     } else {
-    //         self.guessed_letters.insert(upper_letter);
-    //         self.check_game_state();
-    //         GuessResult::Incorrect
-    //     }
-    // }
-    //
-    // fn check_game_state(&mut self) {
-    //     if self.is_word_revealed() {
-    //         self.state = GameState::Won;
-    //     } else if self.failed_guesses >= self.max_failed_guesses {
-    //         self.state = GameState::Lost;
-    //     } else {
-    //         self.state = GameState::InProgress;
-    //     }
-    // }
-    //
-    // fn is_word_revealed(&self) -> bool {
-    //     self.word_progress.values().all(|&revealed| revealed)
     // }
 }
