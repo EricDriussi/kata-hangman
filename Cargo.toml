@@ -16,3 +16,4 @@ unwrap_used = "allow"
 
 [dev-dependencies]
 rstest = "0.25.0"
+rstest_reuse = "0.7.0"

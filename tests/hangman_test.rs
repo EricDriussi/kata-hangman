@@ -2,6 +2,7 @@ use hangman::errors::InitError;
 use hangman::hangman::{GuessResult, Hangman};
 use hangman::state::GameState;
 use rstest::rstest;
+use rstest_reuse::{apply, template};
 
 const VALID_MAX_FAILED_GUESSES: isize = 1;
 const VALID_WORD: &str = "aWordñ";
@@ -37,6 +38,7 @@ fn does_not_init_without_word() {
     assert!(game.is_err_and(|e| matches!(e, InitError::EmptySecretWord)));
 }
 
+#[template]
 #[rstest]
 #[case("3")]
 #[case(" ")]
@@ -44,21 +46,18 @@ fn does_not_init_without_word() {
 #[case("#")]
 #[case(".")]
 #[case("-")]
-fn does_not_init_with_invalid_characters_in_word(#[case] invalid_char: &str) {
+fn invalid_chars(#[case] a: char) {}
+
+#[apply(invalid_chars)]
+fn does_not_init_with_invalid_chars_in_word(#[case] invalid_char: char) {
     let invalid_word = format!("a{invalid_char}Word");
     let game = Hangman::init(&invalid_word, VALID_MAX_FAILED_GUESSES);
 
     assert!(game.is_err_and(|e| matches!(e, InitError::NonAlphabeticCharacters)));
 }
 
-#[rstest]
-#[case("3")]
-#[case(" ")]
-#[case("!")]
-#[case("#")]
-#[case(".")]
-#[case("-")]
-fn does_not_accept_invalid_characters_when_guessing(#[case] invalid_char: char) {
+#[apply(invalid_chars)]
+fn does_not_accept_invalid_chars_when_guessing(#[case] invalid_char: char) {
     let game = Hangman::init(VALID_WORD, VALID_MAX_FAILED_GUESSES);
 
     let guess_result = game.unwrap().guess(invalid_char);
