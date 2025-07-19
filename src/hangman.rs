@@ -5,34 +5,32 @@ use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
-    secret_word: String,
-    incorrect_guess_limit: usize,
-    incorrect_guesses: HashSet<char>,
+    word: String,
+    max_failed_guesses: usize,
     guessed_letters: HashSet<char>,
-    revealed_word_state: HashMap<char, bool>,
+    word_progress: HashMap<char, bool>,
     state: GameState,
 }
 
 impl Hangman {
-    pub fn init(secret_word: &str, incorrect_guess_limit: usize) -> Result<Self, InitError> {
-        if incorrect_guess_limit < 1 {
+    pub fn init(word: &str, max_failed_guesses: usize) -> Result<Self, InitError> {
+        if max_failed_guesses < 1 {
             return Err(InitError::NotEnoughGuesses);
         }
 
-        if secret_word.is_empty() {
+        if word.is_empty() {
             return Err(InitError::EmptySecretWord);
         }
 
-        if secret_word.chars().any(|ch| !ch.is_ascii_alphabetic()) {
+        if word.chars().any(|ch| !ch.is_ascii_alphabetic()) {
             return Err(InitError::NonAlphabeticCharacters);
         }
 
         Ok(Hangman {
-            secret_word: secret_word.to_string(),
-            incorrect_guess_limit,
-            incorrect_guesses: HashSet::new(),
+            word: word.to_uppercase().to_string(),
+            max_failed_guesses,
             guessed_letters: HashSet::new(),
-            revealed_word_state: secret_word.chars().map(|ch| (ch, false)).collect(),
+            word_progress: word.to_uppercase().chars().map(|ch| (ch, false)).collect(),
             state: GameState::InProgress,
         })
     }
