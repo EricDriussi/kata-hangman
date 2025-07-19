@@ -4,7 +4,7 @@ use hangman::hangman::Hangman;
 use hangman::state::GameState;
 
 const VALID_MAX_FAILED_GUESSES: isize = 1;
-const VALID_WORD: &str = "aWord";
+const VALID_WORD: &str = "aWordñ";
 
 #[test]
 fn starts_with_valid_word_and_limit() {
@@ -45,7 +45,7 @@ fn does_not_init_without_word() {
 #[case(".")]
 #[case("-")]
 fn does_not_init_with_invalid_characters_in_word(#[case] invalid_char: &str) {
-    let invalid_word = format!("a{}Word", invalid_char);
+    let invalid_word = format!("a{invalid_char}Word");
     let game = Hangman::init(&invalid_word, VALID_MAX_FAILED_GUESSES);
 
     assert!(game.is_err_and(|e| matches!(e, InitError::NonAlphabeticCharacters)));

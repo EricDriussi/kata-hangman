@@ -1,5 +1,5 @@
 use crate::errors::InitError;
-// use crate::result::GuessResult;
+// use crate::results::GuessResult;
 use crate::state::GameState;
 use std::collections::{HashMap, HashSet};
 
@@ -7,6 +7,7 @@ use std::collections::{HashMap, HashSet};
 pub struct Hangman {
     word: String,
     max_failed_guesses: isize,
+    failed_guesses: usize,
     guessed_letters: HashSet<char>,
     word_progress: HashMap<char, bool>,
     state: GameState,
@@ -22,13 +23,14 @@ impl Hangman {
             return Err(InitError::EmptySecretWord);
         }
 
-        if word.chars().any(|ch| !ch.is_ascii_alphabetic()) {
+        if word.chars().any(|ch| !ch.is_alphabetic()) {
             return Err(InitError::NonAlphabeticCharacters);
         }
 
         Ok(Hangman {
             word: word.to_uppercase().to_string(),
             max_failed_guesses,
+            failed_guesses: 0,
             guessed_letters: HashSet::new(),
             word_progress: word.to_uppercase().chars().map(|ch| (ch, false)).collect(),
             state: GameState::InProgress,
@@ -59,9 +61,9 @@ impl Hangman {
     //         })
     //         .collect()
     // }
-    //
+
     // pub fn guess(&mut self, letter: char) -> GuessResult {
-    //     if !self.is_in_progress() {
+    //     if self.state != GameState::InProgress {
     //         return GuessResult::Duplicate; // Or a specific "GameEnded" result, depending on desired behavior
     //     }
     //
@@ -77,12 +79,12 @@ impl Hangman {
     //
     //     self.guessed_letters.insert(upper_letter);
     //
-    //     if self.secret_word.contains(upper_letter) {
-    //         self.revealed_word_state.insert(upper_letter, true);
+    //     if self.word.contains(upper_letter) {
+    //         self.word_progress.insert(upper_letter, true);
     //         self.check_game_state();
     //         GuessResult::Correct
     //     } else {
-    //         self.incorrect_guesses.insert(upper_letter);
+    //         self.guessed_letters.insert(upper_letter);
     //         self.check_game_state();
     //         GuessResult::Incorrect
     //     }
@@ -90,15 +92,15 @@ impl Hangman {
     //
     // fn check_game_state(&mut self) {
     //     if self.is_word_revealed() {
-    //         self.game_state = GameState::Won;
-    //     } else if self.incorrect_guesses.len() >= self.incorrect_guess_limit {
-    //         self.game_state = GameState::Lost;
+    //         self.state = GameState::Won;
+    //     } else if self.failed_guesses >= self.max_failed_guesses {
+    //         self.state = GameState::Lost;
     //     } else {
-    //         self.game_state = GameState::InProgress;
+    //         self.state = GameState::InProgress;
     //     }
     // }
     //
     // fn is_word_revealed(&self) -> bool {
-    //     self.revealed_word_state.values().all(|&revealed| revealed)
+    //     self.word_progress.values().all(|&revealed| revealed)
     // }
 }
