@@ -157,3 +157,25 @@ fn word_is_displayed_showing_guessed_char() {
 
     assert_eq!(word, "A_C");
 }
+
+#[test]
+fn shows_remaining_failures() {
+    let mut game = Hangman::init("abc", 2).unwrap();
+
+    assert_eq!(game.remaining_failures(), 2);
+
+    game.guess('x');
+
+    assert_eq!(game.remaining_failures(), 1);
+}
+
+#[test]
+fn shows_already_guessed_chars() {
+    let mut game = Hangman::init("abc", 2).unwrap();
+    game.guess('a');
+    game.guess('x');
+
+    let already_guessed = game.already_guessed();
+
+    assert_eq!(already_guessed, "\nCorrect guesses: A\nIncorrect guesses: X");
+}
