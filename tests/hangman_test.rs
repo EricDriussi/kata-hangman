@@ -4,25 +4,25 @@ use hangman::state::GameState;
 use rstest::rstest;
 use rstest_reuse::{apply, template};
 
-const VALID_MAX_FAILED_GUESSES: usize = 1;
+const VALID_ALLOWED_FAILURES: usize = 1;
 const VALID_WORD: &str = "aWordñ";
 
 #[test]
 fn starts_with_valid_word_and_limit() {
-    let game = Hangman::init(VALID_WORD, VALID_MAX_FAILED_GUESSES);
+    let game = Hangman::init(VALID_WORD, VALID_ALLOWED_FAILURES);
 
     assert!(game.is_ok());
 }
 
 #[test]
 fn starts_with_in_progress_state() {
-    let game = Hangman::init(VALID_WORD, VALID_MAX_FAILED_GUESSES);
+    let game = Hangman::init(VALID_WORD, VALID_ALLOWED_FAILURES);
 
     assert!(game.is_ok_and(|g| g.state() == GameState::InProgress));
 }
 
 #[test]
-fn does_not_init_with_invalid_max_failed_guesses() {
+fn does_not_init_with_invalid_allowed_failures() {
     let game = Hangman::init(VALID_WORD, 0);
 
     assert!(game.is_err_and(|e| matches!(e, InitError::NotEnoughGuesses)));
@@ -30,7 +30,7 @@ fn does_not_init_with_invalid_max_failed_guesses() {
 
 #[test]
 fn does_not_init_without_word() {
-    let game = Hangman::init("", VALID_MAX_FAILED_GUESSES);
+    let game = Hangman::init("", VALID_ALLOWED_FAILURES);
 
     assert!(game.is_err_and(|e| matches!(e, InitError::EmptySecretWord)));
 }
@@ -48,14 +48,14 @@ fn invalid_chars(#[case] a: char) {}
 #[apply(invalid_chars)]
 fn does_not_init_with_invalid_chars_in_word(#[case] invalid_char: char) {
     let invalid_word = format!("a{invalid_char}Word");
-    let game = Hangman::init(&invalid_word, VALID_MAX_FAILED_GUESSES);
+    let game = Hangman::init(&invalid_word, VALID_ALLOWED_FAILURES);
 
     assert!(game.is_err_and(|e| matches!(e, InitError::NonAlphabeticCharacters)));
 }
 
 #[apply(invalid_chars)]
 fn does_not_accept_invalid_chars_when_guessing(#[case] invalid_char: char) {
-    let game = Hangman::init(VALID_WORD, VALID_MAX_FAILED_GUESSES);
+    let game = Hangman::init(VALID_WORD, VALID_ALLOWED_FAILURES);
 
     let guess_result = game.unwrap().guess(invalid_char);
 
@@ -72,11 +72,12 @@ fn succeeds_when_guessing_a_matching_char() {
 }
 
 #[test]
-fn fails_when_when_guessing_a_previously_guessed_char() {
+fn warns_of_duplicate_when_when_guessing_a_previously_guessed_char() {
     let mut game = Hangman::init("abc", 1).unwrap();
 
     game.guess('a');
     let second_guess_result = game.guess('a');
+
     assert!(matches!(second_guess_result, GuessResult::Duplicate));
 }
 
@@ -90,7 +91,7 @@ fn fails_when_guessing_a_non_matching_char() {
 }
 
 #[test]
-fn game_stops_when_max_failed_guesses_are_reached() {
+fn game_stops_when_allowed_failures_are_reached() {
     let mut game = Hangman::init("abc", 1).unwrap();
 
     game.guess('x');
@@ -100,7 +101,7 @@ fn game_stops_when_max_failed_guesses_are_reached() {
 }
 
 #[test]
-fn game_stops_when_all_letters_are_guessed() {
+fn game_stops_when_all_chars_are_guessed() {
     let mut game = Hangman::init("a", 1).unwrap();
 
     game.guess('a');
@@ -110,7 +111,7 @@ fn game_stops_when_all_letters_are_guessed() {
 }
 
 #[test]
-fn game_is_lost_when_max_failed_guesses_are_reached() {
+fn game_is_lost_when_allowed_failures_are_reached() {
     let mut game = Hangman::init("abc", 1).unwrap();
 
     game.guess('x');
@@ -119,7 +120,7 @@ fn game_is_lost_when_max_failed_guesses_are_reached() {
 }
 
 #[test]
-fn game_is_won_when_all_letters_are_guessed() {
+fn game_is_won_when_all_chars_are_guessed() {
     let mut game = Hangman::init("a", 1).unwrap();
 
     game.guess('a');
@@ -128,8 +129,8 @@ fn game_is_won_when_all_letters_are_guessed() {
 }
 
 #[test]
-fn word_is_initially_displayed_hiding_all_letters() {
-    let game = Hangman::init("abc", 1).unwrap();
+fn word_is_initially_displayed_hiding_all_chars() {
+    let game = Hangman::init("abc", VALID_ALLOWED_FAILURES).unwrap();
 
     let word: String = game.display_word();
 
@@ -137,9 +138,8 @@ fn word_is_initially_displayed_hiding_all_letters() {
 }
 
 #[test]
-fn word_is_displayed_showing_guessed_letter() {
-    let mut game = Hangman::init("abc", 1).unwrap();
-
+fn word_is_displayed_showing_guessed_char() {
+    let mut game = Hangman::init("abc", VALID_ALLOWED_FAILURES).unwrap();
     game.guess('a');
     game.guess('c');
 

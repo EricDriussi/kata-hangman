@@ -7,17 +7,16 @@ use std::collections::HashSet;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
-    word: String,
-    max_failed_guesses: usize,
-    failed_guesses: usize,
-    guessed_letters: HashSet<char>,
-    word_progress: IndexMap<char, bool>,
+    secret_word: IndexMap<char, bool>,
+    allowed_failures: usize,
+    total_failures: usize,
+    guessed_chars: HashSet<char>,
     state: GameState,
 }
 
 impl Hangman {
-    pub fn init(word: &str, max_failed_guesses: usize) -> InitResult {
-        if max_failed_guesses < 1 {
+    pub fn init(word: &str, allowed_failures: usize) -> InitResult {
+        if allowed_failures < 1 {
             return Err(InitError::NotEnoughGuesses);
         }
 
@@ -30,11 +29,10 @@ impl Hangman {
         }
 
         Ok(Hangman {
-            word: word.to_uppercase().to_string(),
-            max_failed_guesses,
-            failed_guesses: 0,
-            guessed_letters: HashSet::new(),
-            word_progress: word.to_uppercase().chars().map(|ch| (ch, false)).collect(),
+            allowed_failures,
+            total_failures: 0,
+            guessed_chars: HashSet::new(),
+            secret_word: word.to_uppercase().chars().map(|ch| (ch, false)).collect(),
             state: GameState::InProgress,
         })
     }
@@ -43,31 +41,35 @@ impl Hangman {
         self.state
     }
 
-    pub fn guess(&mut self, letter: char) -> GuessResult {
+    pub fn guess(&mut self, character: char) -> GuessResult {
         if self.state != GameState::InProgress {
             return GuessResult::GameNotInProgress;
         }
 
-        if !letter.is_alphabetic() {
+        if !character.is_alphabetic() {
             return GuessResult::InvalidCharacter;
         }
 
-        let upper_letter = letter.to_uppercase().next().unwrap_or(letter);
+        let upper_char = character.to_uppercase().next().unwrap_or(character);
 
-        if self.guessed_letters.contains(&upper_letter) {
+        if self.guessed_chars.contains(&upper_char) {
             return GuessResult::Duplicate;
         }
 
-        if self.word.contains(upper_letter) {
-            self.guessed_letters.insert(upper_letter);
-            self.word_progress.insert(upper_letter, true);
-            if self.word_progress.values().all(|&guessed| guessed) {
+        if self
+            .secret_word
+            .keys()
+            .any(|&secret_char| secret_char.eq(&upper_char))
+        {
+            self.guessed_chars.insert(upper_char);
+            self.secret_word.insert(upper_char, true);
+            if self.secret_word.values().all(|&guessed| guessed) {
                 self.state = GameState::Won;
             }
             GuessResult::Correct
         } else {
-            self.failed_guesses += 1;
-            if self.failed_guesses >= self.max_failed_guesses {
+            self.total_failures += 1;
+            if self.total_failures >= self.allowed_failures {
                 self.state = GameState::Lost;
             }
             GuessResult::Incorrect
@@ -75,7 +77,7 @@ impl Hangman {
     }
 
     pub fn display_word(&self) -> String {
-        self.word_progress
+        self.secret_word
             .iter()
             .map(Self::non_guessed_chars_as_underscore())
             .collect()
