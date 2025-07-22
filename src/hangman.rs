@@ -3,14 +3,14 @@ pub use crate::results::GuessResult;
 use crate::results::InitResult;
 use crate::state::GameState;
 use indexmap::IndexMap;
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
     secret_word: IndexMap<char, bool>,
     allowed_failures: usize,
     total_failures: usize,
-    guessed_chars: HashSet<char>,
+    guessed_chars: HashMap<char, bool>,
     state: GameState,
 }
 
@@ -31,7 +31,7 @@ impl Hangman {
         Ok(Hangman {
             allowed_failures,
             total_failures: 0,
-            guessed_chars: HashSet::new(),
+            guessed_chars: HashMap::new(),
             secret_word: word.to_uppercase().chars().map(|ch| (ch, false)).collect(),
             state: GameState::InProgress,
         })
@@ -52,7 +52,11 @@ impl Hangman {
 
         let upper_char = character.to_uppercase().next().unwrap_or(character);
 
-        if self.guessed_chars.contains(&upper_char) {
+        if self
+            .guessed_chars
+            .keys()
+            .any(|&secret_char| secret_char.eq(&upper_char))
+        {
             return GuessResult::Duplicate;
         }
 
@@ -61,13 +65,14 @@ impl Hangman {
             .keys()
             .any(|&secret_char| secret_char.eq(&upper_char))
         {
-            self.guessed_chars.insert(upper_char);
+            self.guessed_chars.insert(upper_char, true);
             self.secret_word.insert(upper_char, true);
             if self.secret_word.values().all(|&guessed| guessed) {
                 self.state = GameState::Won;
             }
             GuessResult::Correct
         } else {
+            self.guessed_chars.insert(upper_char, false);
             self.total_failures += 1;
             if self.total_failures >= self.allowed_failures {
                 self.state = GameState::Lost;
