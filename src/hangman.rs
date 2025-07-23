@@ -2,12 +2,13 @@ use crate::errors::InitError;
 use crate::failures::AllowedFailures;
 use crate::results::GuessResult;
 use crate::results::InitResult;
+use crate::secret_word::SecretWord;
 use crate::state::GameState;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
-    secret_word: Vec<(char, bool)>,
+    secret_word: SecretWord,
     failures: AllowedFailures,
     guessed_chars: HashMap<char, bool>,
     state: GameState,
@@ -30,7 +31,7 @@ impl Hangman {
         Ok(Hangman {
             failures: AllowedFailures::limit(allowed_failures),
             guessed_chars: HashMap::new(),
-            secret_word: word.to_uppercase().chars().map(|ch| (ch, false)).collect(),
+            secret_word: SecretWord::new(word),
             state: GameState::InProgress,
         })
     }
@@ -58,18 +59,10 @@ impl Hangman {
             return GuessResult::Duplicate;
         }
 
-        if self
-            .secret_word
-            .iter()
-            .any(|(secret_char, _)| secret_char.eq(&upper_char))
-        {
+        if self.secret_word.contains(upper_char) {
             self.guessed_chars.insert(upper_char, true);
-            for (key, value) in &mut self.secret_word {
-                if *key == upper_char {
-                    *value = true;
-                }
-            }
-            if self.secret_word.iter().all(|(_, guessed)| *guessed) {
+            self.secret_word.reveal(upper_char);
+            if self.secret_word.is_revealed() {
                 self.state = GameState::Won;
             }
             GuessResult::Correct
@@ -109,13 +102,6 @@ impl Hangman {
     }
 
     pub fn display_word(&self) -> String {
-        self.secret_word
-            .iter()
-            .map(Self::non_guessed_chars_as_underscore())
-            .collect()
-    }
-
-    fn non_guessed_chars_as_underscore() -> fn(&(char, bool)) -> char {
-        |(char, guessed)| if *guessed { *char } else { '_' }
+        self.secret_word.display()
     }
 }

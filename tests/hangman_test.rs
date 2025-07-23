@@ -1,9 +1,9 @@
 use hangman::errors::InitError;
 use hangman::hangman::Hangman;
+use hangman::results::GuessResult;
 use hangman::state::GameState;
 use rstest::rstest;
 use rstest_reuse::{apply, template};
-use hangman::results::GuessResult;
 
 const VALID_ALLOWED_FAILURES: isize = 1;
 const VALID_WORD: &str = "aWordñ";
@@ -137,36 +137,6 @@ fn game_is_won_when_word_is_guessed() {
     game.guess('a');
 
     assert!(matches!(game.state(), GameState::Won));
-}
-
-#[test]
-fn word_is_initially_displayed_hiding_all_chars() {
-    let game = Hangman::init("abc", VALID_ALLOWED_FAILURES).unwrap();
-
-    let word: String = game.display_word();
-
-    assert_eq!(word, "___");
-}
-
-#[test]
-fn word_is_displayed_showing_guessed_char() {
-    let mut game = Hangman::init("abc", VALID_ALLOWED_FAILURES).unwrap();
-    game.guess('a');
-    game.guess('c');
-
-    let word: String = game.display_word();
-
-    assert_eq!(word, "A_C");
-}
-
-#[test]
-fn word_is_displayed_showing_all_instances_of_guessed_char() {
-    let mut game = Hangman::init("aba", VALID_ALLOWED_FAILURES).unwrap();
-    game.guess('a');
-
-    let word: String = game.display_word();
-
-    assert_eq!(word, "A_A");
 }
 
 #[test]
