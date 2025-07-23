@@ -3,7 +3,7 @@ pub use crate::results::GuessResult;
 use crate::results::InitResult;
 use crate::state::GameState;
 use indexmap::IndexMap;
-use std::collections::{BTreeSet, HashMap};
+use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
@@ -88,35 +88,24 @@ impl Hangman {
     }
 
     pub fn already_guessed(&self) -> String {
-        let correct_guesses: BTreeSet<char> = self
+        let (correct_guesses, incorrect_guesses): (Vec<_>, Vec<_>) = self
             .guessed_chars
             .iter()
-            .filter(|&(_, &is_correct)| is_correct)
-            .map(|(char_val, _)| char_val)
-            .copied()
-            .collect();
+            .partition(|&(_, &was_successful)| was_successful);
 
-        let incorrect_guesses: BTreeSet<char> = self
-            .guessed_chars
-            .iter()
-            .filter(|&(_, &is_correct)| !is_correct)
-            .map(|(char_val, _)| char_val)
-            .copied()
-            .collect();
+        format!(
+            "\nCorrect guesses: {}\nIncorrect guesses: {}",
+            Self::format_guesses(correct_guesses),
+            Self::format_guesses(incorrect_guesses)
+        )
+    }
 
-        let correct_str = correct_guesses
-            .iter()
-            .map(|&c| c.to_string())
+    fn format_guesses(chars: Vec<(&char, &bool)>) -> String {
+        chars
+            .into_iter()
+            .map(|(c, _)| c.to_string())
             .collect::<Vec<String>>()
-            .join(", ");
-
-        let incorrect_str = incorrect_guesses
-            .iter()
-            .map(|&c| c.to_string())
-            .collect::<Vec<String>>()
-            .join(", ");
-
-        format!("\nCorrect guesses: {correct_str}\nIncorrect guesses: {incorrect_str}")
+            .join(", ")
     }
 
     pub fn display_word(&self) -> String {
