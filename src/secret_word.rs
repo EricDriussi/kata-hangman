@@ -1,0 +1,41 @@
+#[derive(Debug, PartialEq, Eq)]
+pub struct SecretWord {
+    secret_chars: Vec<(char, bool)>,
+}
+
+impl SecretWord {
+    pub fn new(word: &str) -> Self {
+        SecretWord {
+            secret_chars: word.to_uppercase().chars().map(|ch| (ch, false)).collect(),
+        }
+    }
+
+    pub fn contains(&self, character: char) -> bool {
+        self.secret_chars
+            .iter()
+            .any(|(secret_char, _)| secret_char.eq_ignore_ascii_case(&character))
+    }
+
+    pub fn reveal(&mut self, character: char) {
+        for (key, value) in &mut self.secret_chars {
+            if key.eq_ignore_ascii_case(&character) {
+                *value = true;
+            }
+        }
+    }
+
+    pub fn is_revealed(&self) -> bool {
+        self.secret_chars.iter().all(|(_, guessed)| *guessed)
+    }
+
+    pub fn display(&self) -> String {
+        self.secret_chars
+            .iter()
+            .map(Self::non_guessed_chars_as_underscore())
+            .collect()
+    }
+
+    fn non_guessed_chars_as_underscore() -> fn(&(char, bool)) -> char {
+        |(char, guessed)| if *guessed { *char } else { '_' }
+    }
+}
