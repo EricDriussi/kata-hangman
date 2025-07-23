@@ -1,10 +1,33 @@
+use hangman::errors::SecretWordError;
 use hangman::secret_word::SecretWord;
+use rstest::rstest;
+
+#[test]
+fn does_not_start_without_word() {
+    let word = SecretWord::new("");
+
+    assert!(word.is_err_and(|e| matches!(e, SecretWordError::EmptySecretWord)));
+}
+
+#[rstest]
+#[case("3")]
+#[case(" ")]
+#[case("!")]
+#[case("#")]
+#[case(".")]
+#[case("-")]
+fn does_not_start_with_invalid_chars_in_word(#[case] invalid_char: char) {
+    let invalid_word = format!("a{invalid_char}Word");
+    let word = SecretWord::new(&invalid_word);
+
+    assert!(word.is_err_and(|e| matches!(e, SecretWordError::NonAlphabeticCharacters)));
+}
 
 #[test]
 fn initially_displays_all_chars_as_hidden() {
     let word = SecretWord::new("abc");
 
-    let word: String = word.display();
+    let word: String = word.unwrap().display();
 
     assert_eq!(word, "___");
 }
@@ -13,19 +36,19 @@ fn initially_displays_all_chars_as_hidden() {
 fn can_tell_if_word_contains_char() {
     let word = SecretWord::new("abc");
 
-    assert!(word.contains('a'));
+    assert!(word.unwrap().contains('a'));
 }
 
 #[test]
 fn can_tell_if_word_does_not_contain_char() {
     let word = SecretWord::new("abc");
 
-    assert!(!word.contains('x'));
+    assert!(!word.unwrap().contains('x'));
 }
 
 #[test]
 fn displays_revealed_chars() {
-    let mut word = SecretWord::new("abc");
+    let mut word = SecretWord::new("abc").unwrap();
     word.reveal('a');
     word.reveal('c');
 
@@ -36,7 +59,7 @@ fn displays_revealed_chars() {
 
 #[test]
 fn displays_all_instances_of_revealed_char() {
-    let mut word = SecretWord::new("aba");
+    let mut word = SecretWord::new("aba").unwrap();
     word.reveal('a');
 
     let word: String = word.display();
@@ -46,7 +69,7 @@ fn displays_all_instances_of_revealed_char() {
 
 #[test]
 fn does_not_reveal_char_not_in_word() {
-    let mut word = SecretWord::new("abc");
+    let mut word = SecretWord::new("abc").unwrap();
     word.reveal('x');
 
     let word: String = word.display();
@@ -56,7 +79,7 @@ fn does_not_reveal_char_not_in_word() {
 
 #[test]
 fn can_tell_if_all_chars_are_revealed() {
-    let mut word = SecretWord::new("abc");
+    let mut word = SecretWord::new("abc").unwrap();
     word.reveal('a');
     word.reveal('b');
     word.reveal('c');
@@ -65,7 +88,7 @@ fn can_tell_if_all_chars_are_revealed() {
 }
 #[test]
 fn can_tell_if_not_all_chars_are_revealed() {
-    let mut word = SecretWord::new("abc");
+    let mut word = SecretWord::new("abc").unwrap();
     word.reveal('a');
     word.reveal('b');
 

@@ -1,11 +1,17 @@
+use crate::errors::AllowedFailuresError;
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct AllowedFailures {
     remaining: isize,
 }
 
 impl AllowedFailures {
-    pub fn limit(limit: isize) -> Self {
-        AllowedFailures { remaining: limit }
+    pub fn limit(limit: isize) -> Result<Self, AllowedFailuresError> {
+        if limit < 1 {
+            return Err(AllowedFailuresError::NotEnoughGuesses);
+        }
+
+        Ok(AllowedFailures { remaining: limit })
     }
 
     pub fn remaining(&self) -> isize {

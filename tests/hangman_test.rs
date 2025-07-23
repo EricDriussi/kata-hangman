@@ -1,12 +1,12 @@
-use hangman::errors::InitError;
 use hangman::hangman::Hangman;
 use hangman::results::GuessResult;
 use hangman::state::GameState;
 use rstest::rstest;
-use rstest_reuse::{apply, template};
 
 const VALID_ALLOWED_FAILURES: isize = 1;
 const VALID_WORD: &str = "aWordñ";
+
+// TODO: Should there be tests for invalid inputs here?
 
 #[test]
 fn starts_with_valid_word_and_limit() {
@@ -22,21 +22,6 @@ fn starts_with_in_progress_state() {
     assert!(game.is_ok_and(|g| g.state() == GameState::InProgress));
 }
 
-#[test]
-fn does_not_init_with_invalid_allowed_failures() {
-    let game = Hangman::init(VALID_WORD, 0);
-
-    assert!(game.is_err_and(|e| matches!(e, InitError::NotEnoughGuesses)));
-}
-
-#[test]
-fn does_not_start_without_word() {
-    let game = Hangman::init("", VALID_ALLOWED_FAILURES);
-
-    assert!(game.is_err_and(|e| matches!(e, InitError::EmptySecretWord)));
-}
-
-#[template]
 #[rstest]
 #[case("3")]
 #[case(" ")]
@@ -44,17 +29,6 @@ fn does_not_start_without_word() {
 #[case("#")]
 #[case(".")]
 #[case("-")]
-fn invalid_chars(#[case] a: char) {}
-
-#[apply(invalid_chars)]
-fn does_not_start_with_invalid_chars_in_word(#[case] invalid_char: char) {
-    let invalid_word = format!("a{invalid_char}Word");
-    let game = Hangman::init(&invalid_word, VALID_ALLOWED_FAILURES);
-
-    assert!(game.is_err_and(|e| matches!(e, InitError::NonAlphabeticCharacters)));
-}
-
-#[apply(invalid_chars)]
 fn does_not_accept_invalid_guesses(#[case] invalid_char: char) {
     let game = Hangman::init(VALID_WORD, VALID_ALLOWED_FAILURES);
 

@@ -1,13 +1,23 @@
+use crate::errors::SecretWordError;
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct SecretWord {
+    // TODO: Should this be a Vec<SecretChar>?
     secret_chars: Vec<(char, bool)>,
 }
 
 impl SecretWord {
-    pub fn new(word: &str) -> Self {
-        SecretWord {
-            secret_chars: word.to_uppercase().chars().map(|ch| (ch, false)).collect(),
+    pub fn new(word: &str) -> Result<Self, SecretWordError> {
+        if word.is_empty() {
+            return Err(SecretWordError::EmptySecretWord);
         }
+
+        if word.chars().any(|ch| !ch.is_alphabetic()) {
+            return Err(SecretWordError::NonAlphabeticCharacters);
+        }
+        Ok(SecretWord {
+            secret_chars: word.to_uppercase().chars().map(|ch| (ch, false)).collect(),
+        })
     }
 
     pub fn contains(&self, character: char) -> bool {

@@ -1,4 +1,3 @@
-use crate::errors::InitError;
 use crate::failures::AllowedFailures;
 use crate::results::GuessResult;
 use crate::results::InitResult;
@@ -10,28 +9,17 @@ use std::collections::HashMap;
 pub struct Hangman {
     secret_word: SecretWord,
     failures: AllowedFailures,
+    // TODO: Should this be a GuessedChars VO?
     guessed_chars: HashMap<char, bool>,
     state: GameState,
 }
 
 impl Hangman {
     pub fn init(word: &str, allowed_failures: isize) -> InitResult {
-        if allowed_failures < 1 {
-            return Err(InitError::NotEnoughGuesses);
-        }
-
-        if word.is_empty() {
-            return Err(InitError::EmptySecretWord);
-        }
-
-        if word.chars().any(|ch| !ch.is_alphabetic()) {
-            return Err(InitError::NonAlphabeticCharacters);
-        }
-
         Ok(Hangman {
-            failures: AllowedFailures::limit(allowed_failures),
+            failures: AllowedFailures::limit(allowed_failures)?,
             guessed_chars: HashMap::new(),
-            secret_word: SecretWord::new(word),
+            secret_word: SecretWord::new(word)?,
             state: GameState::InProgress,
         })
     }
