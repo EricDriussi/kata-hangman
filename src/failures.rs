@@ -1,0 +1,22 @@
+#[derive(Debug, PartialEq, Eq)]
+pub struct AllowedFailures {
+    remaining: isize,
+}
+
+impl AllowedFailures {
+    pub fn limit(limit: isize) -> Self {
+        AllowedFailures { remaining: limit }
+    }
+
+    pub fn remaining(&self) -> isize {
+        self.remaining
+    }
+
+    pub fn consume(&mut self) {
+        self.remaining -= 1;
+    }
+
+    pub fn none_left(&self) -> bool {
+        self.remaining < 1
+    }
+}
