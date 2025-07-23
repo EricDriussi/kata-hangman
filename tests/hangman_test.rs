@@ -187,5 +187,8 @@ fn shows_already_guessed_chars() {
 
     let already_guessed = game.already_guessed();
 
-    assert_eq!(already_guessed, "\nCorrect guesses: A\nIncorrect guesses: X");
+    assert_eq!(
+        already_guessed,
+        "\n\tCorrect guesses: A\n\tIncorrect guesses: X"
+    );
 }

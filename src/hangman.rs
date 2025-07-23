@@ -97,7 +97,7 @@ impl Hangman {
             .partition(|&(_, &was_successful)| was_successful);
 
         format!(
-            "\nCorrect guesses: {}\nIncorrect guesses: {}",
+            "\n\tCorrect guesses: {}\n\tIncorrect guesses: {}",
             Self::format_guesses(correct_guesses),
             Self::format_guesses(incorrect_guesses)
         )
