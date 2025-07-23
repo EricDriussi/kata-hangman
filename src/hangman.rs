@@ -2,14 +2,11 @@ use crate::errors::InitError;
 pub use crate::results::GuessResult;
 use crate::results::InitResult;
 use crate::state::GameState;
-use indexmap::IndexMap;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
-    // TODO: should this be a Vec<(char, bool)> instead?
-    // Test if it holds and updates duplicates correctly
-    secret_word: IndexMap<char, bool>,
+    secret_word: Vec<(char, bool)>,
     allowed_failures: usize,
     total_failures: usize,
     guessed_chars: HashMap<char, bool>,
@@ -64,12 +61,18 @@ impl Hangman {
 
         if self
             .secret_word
-            .keys()
-            .any(|&secret_char| secret_char.eq(&upper_char))
+            .iter()
+            .any(|(secret_char, _)| secret_char.eq(&upper_char))
         {
             self.guessed_chars.insert(upper_char, true);
-            self.secret_word.insert(upper_char, true);
-            if self.secret_word.values().all(|&guessed| guessed) {
+            for (key, value) in & mut self.secret_word {
+                if *key == upper_char {
+                    *value = true;
+                }
+            }
+            if self.secret_word
+                .iter()
+                .all(|(_, guessed)| *guessed) {
                 self.state = GameState::Won;
             }
             GuessResult::Correct
@@ -115,7 +118,7 @@ impl Hangman {
             .collect()
     }
 
-    fn non_guessed_chars_as_underscore() -> fn((&char, &bool)) -> char {
-        |(&char, &guessed)| if guessed { char } else { '_' }
+    fn non_guessed_chars_as_underscore() -> fn(&(char, bool)) -> char {
+        |(char, guessed)| if *guessed { *char } else { '_' }
     }
 }

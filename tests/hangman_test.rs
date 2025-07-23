@@ -159,6 +159,16 @@ fn word_is_displayed_showing_guessed_char() {
 }
 
 #[test]
+fn word_is_displayed_showing_all_instances_of_guessed_char() {
+    let mut game = Hangman::init("aba", VALID_ALLOWED_FAILURES).unwrap();
+    game.guess('a');
+
+    let word: String = game.display_word();
+
+    assert_eq!(word, "A_A");
+}
+
+#[test]
 fn shows_remaining_failures() {
     let mut game = Hangman::init("abc", 2).unwrap();
 
