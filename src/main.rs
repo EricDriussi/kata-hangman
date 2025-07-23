@@ -1,4 +1,5 @@
-use hangman::hangman::{GuessResult, Hangman};
+use hangman::hangman::Hangman;
+use hangman::results::GuessResult;
 use hangman::state::GameState;
 use std::io;
 use std::thread::sleep;
@@ -66,9 +67,9 @@ fn read_stdin() -> String {
     input.trim().to_string()
 }
 
-fn read_int() -> usize {
+fn read_int() -> isize {
     let input = read_stdin();
-    input.trim().parse::<usize>().unwrap_or_else(|_| {
+    input.trim().parse::<isize>().unwrap_or_else(|_| {
         println!("That's doesn't make sense... Try again!");
         read_int()
     })

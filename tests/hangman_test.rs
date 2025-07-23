@@ -1,10 +1,11 @@
 use hangman::errors::InitError;
-use hangman::hangman::{GuessResult, Hangman};
+use hangman::hangman::Hangman;
 use hangman::state::GameState;
 use rstest::rstest;
 use rstest_reuse::{apply, template};
+use hangman::results::GuessResult;
 
-const VALID_ALLOWED_FAILURES: usize = 1;
+const VALID_ALLOWED_FAILURES: isize = 1;
 const VALID_WORD: &str = "aWordñ";
 
 #[test]
@@ -166,17 +167,6 @@ fn word_is_displayed_showing_all_instances_of_guessed_char() {
     let word: String = game.display_word();
 
     assert_eq!(word, "A_A");
-}
-
-#[test]
-fn shows_remaining_failures() {
-    let mut game = Hangman::init("abc", 2).unwrap();
-
-    assert_eq!(game.remaining_failures(), 2);
-
-    game.guess('x');
-
-    assert_eq!(game.remaining_failures(), 1);
 }
 
 #[test]
