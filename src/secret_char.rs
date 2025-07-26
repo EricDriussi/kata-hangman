@@ -5,14 +5,14 @@ use std::fmt;
 #[derive(Debug, PartialEq, Eq)]
 pub struct SecretChar {
     char: Char,
-    guessed: bool,
+    hidden: bool,
 }
 
 impl SecretChar {
     pub fn from(c: char) -> Result<Self, CharError> {
         Ok(SecretChar {
             char: Char::from(c)?,
-            guessed: false,
+            hidden: true,
         })
     }
 
@@ -21,20 +21,20 @@ impl SecretChar {
     }
 
     pub fn reveal(&mut self) {
-        self.guessed = true;
+        self.hidden = false;
     }
 
     pub fn is_guessed(&self) -> bool {
-        self.guessed
+        !self.hidden
     }
 }
 
 impl fmt::Display for SecretChar {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.guessed {
-            write!(f, "{}", self.char)
-        } else {
+        if self.hidden {
             write!(f, "_")
+        } else {
+            write!(f, "{}", self.char)
         }
     }
 }
