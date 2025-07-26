@@ -4,6 +4,7 @@ use crate::results::GuessResult;
 use crate::secret_word::SecretWord;
 use crate::states::GameState;
 use std::collections::HashMap;
+use crate::char::Char;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
@@ -33,6 +34,8 @@ impl Hangman {
             return Err(GuessError::GameNotInProgress);
         }
 
+        let up_ch = Char::from(character)?;
+
         if !character.is_alphabetic() {
             return Err(GuessError::InvalidCharacter);
         }
@@ -47,9 +50,9 @@ impl Hangman {
             return Ok(GuessResult::Duplicate);
         }
 
-        if self.secret_word.contains(upper_char) {
+        if self.secret_word.contains(&up_ch) {
             self.guessed_chars.insert(upper_char, true);
-            self.secret_word.reveal(upper_char);
+            self.secret_word.reveal(&up_ch);
             if self.secret_word.is_revealed() {
                 self.state = GameState::Won;
             }

@@ -16,8 +16,8 @@ impl SecretChar {
         })
     }
 
-    pub fn matches(&self, char: char) -> bool {
-        self.char.matches(char)
+    pub fn matches(&self, char: &Char) -> bool {
+        self.char.eq(char)
     }
 
     pub fn reveal(&mut self) {

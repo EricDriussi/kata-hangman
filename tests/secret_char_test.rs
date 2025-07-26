@@ -42,15 +42,19 @@ fn can_tell_if_guessed() {
 }
 
 #[test]
-fn can_tell_if_matches() {
-    let secret_char = SecretChar::from(Char::from('a').unwrap()).unwrap();
+fn matches_when_underlying_char_matches() {
+    let char = Char::from('a').unwrap();
+    let secret_char = SecretChar::from(char).unwrap();
 
-    assert!(secret_char.matches('a'));
+    let the_same_char = Char::from('a').unwrap();
+    assert!(secret_char.matches(&the_same_char));
 }
 
 #[test]
-fn can_tell_if_doesnt_match() {
-    let secret_char = SecretChar::from(Char::from('a').unwrap()).unwrap();
+fn does_not_match_when_underlying_char_does_not_match() {
+    let char = Char::from('a').unwrap();
+    let secret_char = SecretChar::from(char).unwrap();
 
-    assert!(!secret_char.matches('b'));
+    let different_char = Char::from('b').unwrap();
+    assert!(!secret_char.matches(&different_char));
 }

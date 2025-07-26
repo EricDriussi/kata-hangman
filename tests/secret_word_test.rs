@@ -1,3 +1,4 @@
+use hangman::char::Char;
 use hangman::errors::SecretWordError;
 use hangman::secret_word::SecretWord;
 use rstest::rstest;
@@ -35,22 +36,24 @@ fn initially_displays_all_chars_as_hidden() {
 fn can_tell_if_word_contains_char() {
     let secret_word = SecretWord::from("abc").unwrap();
 
-    assert!(secret_word.contains('a'));
+    let contained_char = Char::from('a').unwrap();
+    assert!(secret_word.contains(&contained_char));
 }
 
 #[test]
 fn can_tell_if_word_does_not_contain_char() {
     let secret_word = SecretWord::from("abc").unwrap();
 
-    assert!(!secret_word.contains('x'));
+    let not_contained_char = &Char::from('x').unwrap();
+    assert!(!secret_word.contains(not_contained_char));
 }
 
 #[test]
 fn displays_revealed_chars() {
     let mut secret_word = SecretWord::from("abc").unwrap();
 
-    secret_word.reveal('a');
-    secret_word.reveal('c');
+    secret_word.reveal(&Char::from('a').unwrap());
+    secret_word.reveal(&Char::from('c').unwrap());
 
     assert_eq!(secret_word.to_string(), "A_C");
 }
@@ -59,7 +62,7 @@ fn displays_revealed_chars() {
 fn displays_all_instances_of_revealed_char() {
     let mut secret_word = SecretWord::from("aba").unwrap();
 
-    secret_word.reveal('a');
+    secret_word.reveal(&Char::from('a').unwrap());
 
     assert_eq!(secret_word.to_string(), "A_A");
 }
@@ -68,7 +71,7 @@ fn displays_all_instances_of_revealed_char() {
 fn does_not_reveal_char_not_in_word() {
     let mut secret_word = SecretWord::from("abc").unwrap();
 
-    secret_word.reveal('x');
+    secret_word.reveal(&Char::from('x').unwrap());
 
     assert_eq!(secret_word.to_string(), "___");
 }
@@ -76,17 +79,17 @@ fn does_not_reveal_char_not_in_word() {
 #[test]
 fn can_tell_if_all_chars_are_revealed() {
     let mut secret_word = SecretWord::from("abc").unwrap();
-    secret_word.reveal('a');
-    secret_word.reveal('b');
-    secret_word.reveal('c');
+    secret_word.reveal(&Char::from('a').unwrap());
+    secret_word.reveal(&Char::from('b').unwrap());
+    secret_word.reveal(&Char::from('c').unwrap());
 
     assert!(secret_word.is_revealed());
 }
 #[test]
 fn can_tell_if_not_all_chars_are_revealed() {
     let mut secret_word = SecretWord::from("abc").unwrap();
-    secret_word.reveal('a');
-    secret_word.reveal('b');
+    secret_word.reveal(&Char::from('a').unwrap());
+    secret_word.reveal(&Char::from('b').unwrap());
 
     assert!(!secret_word.is_revealed());
 }

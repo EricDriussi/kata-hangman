@@ -24,13 +24,13 @@ impl SecretWord {
         })
     }
 
-    pub fn contains(&self, char: char) -> bool {
+    pub fn contains(&self, char: &Char) -> bool {
         self.word
             .iter()
             .any(|secret_char| secret_char.matches(char))
     }
 
-    pub fn reveal(&mut self, char: char) {
+    pub fn reveal(&mut self, char: &Char) {
         self.word
             .iter_mut()
             .filter(|secret_char| secret_char.matches(char))
