@@ -9,9 +9,9 @@ pub struct SecretChar {
 }
 
 impl SecretChar {
-    pub fn from(c: char) -> Result<Self, CharError> {
+    pub fn from(char: Char) -> Result<Self, CharError> {
         Ok(SecretChar {
-            char: Char::from(c)?,
+            char,
             hidden: true,
         })
     }

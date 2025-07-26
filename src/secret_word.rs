@@ -1,3 +1,4 @@
+use crate::char::Char;
 use crate::errors::SecretWordError;
 use crate::secret_char::SecretChar;
 use std::fmt;
@@ -17,7 +18,8 @@ impl SecretWord {
             word: word
                 .to_uppercase()
                 .chars()
-                .map(SecretChar::from)
+                .map(Char::from)
+                .map(|char| char.and_then(SecretChar::from))
                 .collect::<Result<Vec<_>, _>>()?,
         })
     }
@@ -47,6 +49,6 @@ impl fmt::Display for SecretWord {
             .iter()
             .map(SecretChar::to_string)
             .collect::<String>();
-        write!(f, "{}", word)
+        write!(f, "{word}")
     }
 }

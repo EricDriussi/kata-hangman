@@ -1,30 +1,16 @@
-use hangman::errors::CharError;
+use hangman::char::Char;
 use hangman::secret_char::SecretChar;
-use rstest::rstest;
-
-#[rstest]
-#[case('3')]
-#[case(' ')]
-#[case('!')]
-#[case('#')]
-#[case('.')]
-#[case('-')]
-fn does_not_build_from_invalid_char(#[case] invalid_char: char) {
-    let secret_char = SecretChar::from(invalid_char);
-
-    assert!(secret_char.is_err_and(|e| matches!(e, CharError::NonAlphabeticChar)));
-}
 
 #[test]
 fn initially_displays_char_as_hidden() {
-    let secret_char = SecretChar::from('a').unwrap();
+    let secret_char = SecretChar::from(Char::from('a').unwrap()).unwrap();
 
     assert_eq!(secret_char.to_string(), "_");
 }
 
 #[test]
 fn displays_revealed_char_as_uppercase() {
-    let mut secret_char = SecretChar::from('a').unwrap();
+    let mut secret_char = SecretChar::from(Char::from('a').unwrap()).unwrap();
 
     secret_char.reveal();
 
@@ -33,7 +19,7 @@ fn displays_revealed_char_as_uppercase() {
 
 #[test]
 fn displays_non_case_convertible_char_as_is() {
-    let mut secret_char = SecretChar::from('ß').unwrap();
+    let mut secret_char = SecretChar::from(Char::from('ß').unwrap()).unwrap();
 
     secret_char.reveal();
 
@@ -42,14 +28,14 @@ fn displays_non_case_convertible_char_as_is() {
 
 #[test]
 fn can_tell_if_not_guessed() {
-    let secret_char = SecretChar::from('a').unwrap();
+    let secret_char = SecretChar::from(Char::from('a').unwrap()).unwrap();
 
     assert!(!secret_char.is_guessed());
 }
 
 #[test]
 fn can_tell_if_guessed() {
-    let mut secret_char = SecretChar::from('a').unwrap();
+    let mut secret_char = SecretChar::from(Char::from('a').unwrap()).unwrap();
     secret_char.reveal();
 
     assert!(secret_char.is_guessed());
@@ -57,14 +43,14 @@ fn can_tell_if_guessed() {
 
 #[test]
 fn can_tell_if_matches() {
-    let secret_char = SecretChar::from('a').unwrap();
+    let secret_char = SecretChar::from(Char::from('a').unwrap()).unwrap();
 
     assert!(secret_char.matches('a'));
 }
 
 #[test]
 fn can_tell_if_doesnt_match() {
-    let secret_char = SecretChar::from('a').unwrap();
+    let secret_char = SecretChar::from(Char::from('a').unwrap()).unwrap();
 
     assert!(!secret_char.matches('b'));
 }
