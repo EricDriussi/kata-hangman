@@ -6,6 +6,7 @@ use std::io;
 use std::thread::sleep;
 use std::time::Duration;
 
+// TODO: review the tests!
 fn main() {
     clear_screen();
     let (mut game, secret_word) = start_game();

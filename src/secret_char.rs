@@ -1,5 +1,4 @@
 use crate::char::Char;
-use crate::errors::CharError;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -9,13 +8,14 @@ pub struct SecretChar {
 }
 
 impl SecretChar {
-    pub fn from(char: Char) -> Result<Self, CharError> {
-        Ok(SecretChar {
+    pub fn from(char: Char) -> Self {
+        SecretChar {
             char,
             hidden: true,
-        })
+        }
     }
 
+    // TODO: Implement PartialEq<Char>?
     pub fn matches(&self, char: &Char) -> bool {
         self.char.eq(char)
     }

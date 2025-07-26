@@ -19,8 +19,8 @@ impl SecretWord {
                 .to_uppercase()
                 .chars()
                 .map(Char::from)
-                .map(|char| char.and_then(SecretChar::from))
-                .collect::<Result<Vec<_>, _>>()?,
+                .map(|char| char.map(SecretChar::from))
+                .collect::<Result<Vec<SecretChar>, _>>()?,
         })
     }
 
