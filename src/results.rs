@@ -3,6 +3,4 @@ pub enum GuessResult {
     Correct,
     Incorrect,
     Duplicate,
-    InvalidCharacter,
-    GameNotInProgress,
 }

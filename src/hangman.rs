@@ -1,4 +1,4 @@
-use crate::errors::StartError;
+use crate::errors::{GuessError, StartError};
 use crate::failures::AllowedFailures;
 use crate::results::GuessResult;
 use crate::secret_word::SecretWord;
@@ -28,13 +28,13 @@ impl Hangman {
         self.state
     }
 
-    pub fn guess(&mut self, character: char) -> GuessResult {
+    pub fn guess(&mut self, character: char) -> Result<GuessResult, GuessError> {
         if self.state != GameState::InProgress {
-            return GuessResult::GameNotInProgress;
+            return Err(GuessError::GameNotInProgress);
         }
 
         if !character.is_alphabetic() {
-            return GuessResult::InvalidCharacter;
+            return Err(GuessError::InvalidCharacter);
         }
 
         let upper_char = character.to_uppercase().next().unwrap_or(character);
@@ -44,7 +44,7 @@ impl Hangman {
             .keys()
             .any(|&secret_char| secret_char.eq(&upper_char))
         {
-            return GuessResult::Duplicate;
+            return Ok(GuessResult::Duplicate);
         }
 
         if self.secret_word.contains(upper_char) {
@@ -53,14 +53,14 @@ impl Hangman {
             if self.secret_word.is_revealed() {
                 self.state = GameState::Won;
             }
-            GuessResult::Correct
+            Ok(GuessResult::Correct)
         } else {
             self.guessed_chars.insert(upper_char, false);
             self.failures.consume();
             if !self.failures.any_left() {
                 self.state = GameState::Lost;
             }
-            GuessResult::Incorrect
+            Ok(GuessResult::Incorrect)
         }
     }
 

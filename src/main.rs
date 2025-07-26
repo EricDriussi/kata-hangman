@@ -1,3 +1,4 @@
+use hangman::errors::GuessError;
 use hangman::hangman::Hangman;
 use hangman::results::GuessResult;
 use hangman::states::GameState;
@@ -23,14 +24,18 @@ fn main() {
 
         clear_screen();
         match game.guess(guess) {
-            GuessResult::Correct => println!("Correct!"),
-            GuessResult::Incorrect => println!("Not quite..."),
-            GuessResult::Duplicate => println!("You already tried that!"),
-            GuessResult::InvalidCharacter => println!("WTF was that?! Just enter a character!"),
-            GuessResult::GameNotInProgress => {
-                println!("This should never happen :(");
-                break;
-            }
+            Ok(guess_result) => match guess_result {
+                GuessResult::Correct => println!("Correct!"),
+                GuessResult::Incorrect => println!("Not quite..."),
+                GuessResult::Duplicate => println!("You already tried that!"),
+            },
+            Err(guess_error) => match guess_error {
+                GuessError::InvalidCharacter => println!("WTF was that?! Just enter a character!"),
+                GuessError::GameNotInProgress => {
+                    println!("This should never happen :(");
+                    break;
+                }
+            },
         }
         sleep(Duration::from_secs(1));
     }

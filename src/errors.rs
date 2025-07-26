@@ -104,3 +104,32 @@ impl Display for CharError {
 }
 
 impl Error for CharError {}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum GuessError {
+    InvalidCharacter,
+    GameNotInProgress,
+}
+
+impl Display for GuessError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        match self {
+            GuessError::InvalidCharacter => {
+                write!(f, "WTF was that?! Just enter a character!")
+            }
+            GuessError::GameNotInProgress => {
+                write!(f, "This should never happen :(")
+            }
+        }
+    }
+}
+
+impl Error for GuessError {}
+
+impl From<CharError> for GuessError {
+    fn from(error: CharError) -> Self {
+        match error {
+            CharError::NonAlphabeticChar => GuessError::InvalidCharacter,
+        }
+    }
+}
