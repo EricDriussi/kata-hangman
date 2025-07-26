@@ -1,5 +1,6 @@
 use crate::errors::SecretWordError;
 use crate::secret_char::SecretChar;
+use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct SecretWord {
@@ -37,11 +38,15 @@ impl SecretWord {
     pub fn is_revealed(&self) -> bool {
         self.word.iter().all(SecretChar::is_guessed)
     }
+}
 
-    pub fn display(&self) -> String {
-        self.word
+impl fmt::Display for SecretWord {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let word = self
+            .word
             .iter()
-            .map(SecretChar::display)
-            .collect::<String>()
+            .map(SecretChar::to_string)
+            .collect::<String>();
+        write!(f, "{}", word)
     }
 }

@@ -90,6 +90,6 @@ impl Hangman {
     }
 
     pub fn display_word(&self) -> String {
-        self.secret_word.display()
+        self.secret_word.to_string()
     }
 }

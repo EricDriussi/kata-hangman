@@ -1,5 +1,5 @@
 use hangman::char::Char;
-use hangman::errors::SecretCharError;
+use hangman::errors::CharError;
 use rstest::rstest;
 
 #[rstest]
@@ -12,7 +12,7 @@ use rstest::rstest;
 fn does_not_build_from_invalid_char(#[case] invalid_char: char) {
     let secret_char = Char::from(invalid_char);
 
-    assert!(secret_char.is_err_and(|e| matches!(e, SecretCharError::NonAlphabeticChar)));
+    assert!(secret_char.is_err_and(|e| matches!(e, CharError::NonAlphabeticChar)));
 }
 
 #[test]

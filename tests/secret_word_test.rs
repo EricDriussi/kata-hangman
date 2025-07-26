@@ -28,7 +28,7 @@ fn does_not_build_with_invalid_chars_in_word(#[case] invalid_char: char) {
 fn initially_displays_all_chars_as_hidden() {
     let secret_word = SecretWord::from("abc").unwrap();
 
-    assert_eq!(secret_word.display(), "___");
+    assert_eq!(secret_word.to_string(), "___");
 }
 
 #[test]
@@ -52,7 +52,7 @@ fn displays_revealed_chars() {
     secret_word.reveal('a');
     secret_word.reveal('c');
 
-    assert_eq!(secret_word.display(), "A_C");
+    assert_eq!(secret_word.to_string(), "A_C");
 }
 
 #[test]
@@ -61,7 +61,7 @@ fn displays_all_instances_of_revealed_char() {
 
     secret_word.reveal('a');
 
-    assert_eq!(secret_word.display(), "A_A");
+    assert_eq!(secret_word.to_string(), "A_A");
 }
 
 #[test]
@@ -70,7 +70,7 @@ fn does_not_reveal_char_not_in_word() {
 
     secret_word.reveal('x');
 
-    assert_eq!(secret_word.display(), "___");
+    assert_eq!(secret_word.to_string(), "___");
 }
 
 #[test]

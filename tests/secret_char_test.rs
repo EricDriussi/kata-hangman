@@ -1,4 +1,4 @@
-use hangman::errors::SecretCharError;
+use hangman::errors::CharError;
 use hangman::secret_char::SecretChar;
 use rstest::rstest;
 
@@ -12,14 +12,14 @@ use rstest::rstest;
 fn does_not_build_from_invalid_char(#[case] invalid_char: char) {
     let secret_char = SecretChar::from(invalid_char);
 
-    assert!(secret_char.is_err_and(|e| matches!(e, SecretCharError::NonAlphabeticChar)));
+    assert!(secret_char.is_err_and(|e| matches!(e, CharError::NonAlphabeticChar)));
 }
 
 #[test]
 fn initially_displays_char_as_hidden() {
     let secret_char = SecretChar::from('a').unwrap();
 
-    assert_eq!(secret_char.display(), '_');
+    assert_eq!(secret_char.to_string(), "_");
 }
 
 #[test]
@@ -28,7 +28,7 @@ fn displays_revealed_char_as_uppercase() {
 
     secret_char.reveal();
 
-    assert_eq!(secret_char.display(), 'A');
+    assert_eq!(secret_char.to_string(), "A");
 }
 
 #[test]
@@ -37,7 +37,7 @@ fn displays_non_case_convertible_char_as_is() {
 
     secret_char.reveal();
 
-    assert_eq!(secret_char.display(), 'ß');
+    assert_eq!(secret_char.to_string(), "ß");
 }
 
 #[test]

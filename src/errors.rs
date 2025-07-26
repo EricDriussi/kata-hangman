@@ -78,10 +78,10 @@ impl Display for SecretWordError {
     }
 }
 
-impl From<SecretCharError> for SecretWordError {
-    fn from(error: SecretCharError) -> Self {
+impl From<CharError> for SecretWordError {
+    fn from(error: CharError) -> Self {
         match error {
-            SecretCharError::NonAlphabeticChar => SecretWordError::NonAlphabeticCharacters,
+            CharError::NonAlphabeticChar => SecretWordError::NonAlphabeticCharacters,
         }
     }
 }
@@ -89,18 +89,18 @@ impl From<SecretCharError> for SecretWordError {
 impl Error for SecretWordError {}
 
 #[derive(Debug, PartialEq, Eq)]
-pub enum SecretCharError {
+pub enum CharError {
     NonAlphabeticChar,
 }
 
-impl Display for SecretCharError {
+impl Display for CharError {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self {
-            SecretCharError::NonAlphabeticChar => {
+            CharError::NonAlphabeticChar => {
                 write!(f, "Secret char can only by alphabetic.")
             }
         }
     }
 }
 
-impl Error for SecretCharError {}
+impl Error for CharError {}
