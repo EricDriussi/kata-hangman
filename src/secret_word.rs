@@ -7,7 +7,7 @@ pub struct SecretWord {
 }
 
 impl SecretWord {
-    pub fn new(word: &str) -> Result<Self, SecretWordError> {
+    pub fn from(word: &str) -> Result<Self, SecretWordError> {
         if word.is_empty() {
             return Err(SecretWordError::EmptySecretWord);
         }

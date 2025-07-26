@@ -1,16 +1,16 @@
 use hangman::failures::AllowedFailures;
 
 #[test]
-fn errors_with_too_little_failures() {
-    let result = AllowedFailures::limit(0);
+fn does_not_build_with_too_little_failures() {
+    let result = AllowedFailures::from(0);
 
     assert!(result.is_err());
 }
 
 #[test]
-fn remaining_failures_are_consumed() {
+fn failures_are_consumed() {
     let limit = 3;
-    let mut failures = AllowedFailures::limit(limit).unwrap();
+    let mut failures = AllowedFailures::from(limit).unwrap();
 
     failures.consume();
 
@@ -19,18 +19,18 @@ fn remaining_failures_are_consumed() {
 
 #[test]
 fn some_failures_left() {
-    let mut failures = AllowedFailures::limit(2).unwrap();
+    let mut failures = AllowedFailures::from(2).unwrap();
 
     failures.consume();
 
-    assert!(!failures.none_left());
+    assert!(failures.any_left());
 }
 
 #[test]
 fn no_failures_left() {
-    let mut failures = AllowedFailures::limit(1).unwrap();
+    let mut failures = AllowedFailures::from(1).unwrap();
 
     failures.consume();
 
-    assert!(failures.none_left());
+    assert!(!failures.any_left());
 }

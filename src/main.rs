@@ -1,6 +1,6 @@
 use hangman::hangman::Hangman;
 use hangman::results::GuessResult;
-use hangman::state::GameState;
+use hangman::states::GameState;
 use std::io;
 use std::thread::sleep;
 use std::time::Duration;
@@ -49,7 +49,7 @@ fn start_game() -> (Hangman, String) {
     println!("Enter the allowed number of failures:");
     let allowed_failures = read_int();
 
-    match Hangman::init(&secret_word, allowed_failures) {
+    match Hangman::start(&secret_word, allowed_failures) {
         Ok(game) => (game, secret_word),
         Err(e) => {
             clear_screen();

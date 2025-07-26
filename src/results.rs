@@ -1,6 +1,3 @@
-use crate::errors::InitError;
-use crate::hangman::Hangman;
-
 #[derive(Debug, PartialEq, Eq)]
 pub enum GuessResult {
     Correct,
@@ -9,5 +6,3 @@ pub enum GuessResult {
     InvalidCharacter,
     GameNotInProgress,
 }
-
-pub type InitResult = Result<Hangman, InitError>;

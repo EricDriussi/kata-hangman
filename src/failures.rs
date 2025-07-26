@@ -6,7 +6,7 @@ pub struct AllowedFailures {
 }
 
 impl AllowedFailures {
-    pub fn limit(limit: isize) -> Result<Self, AllowedFailuresError> {
+    pub fn from(limit: isize) -> Result<Self, AllowedFailuresError> {
         if limit < 1 {
             return Err(AllowedFailuresError::NotEnoughGuesses);
         }
@@ -22,7 +22,7 @@ impl AllowedFailures {
         self.remaining -= 1;
     }
 
-    pub fn none_left(&self) -> bool {
-        self.remaining < 1
+    pub fn any_left(&self) -> bool {
+        self.remaining > 0
     }
 }

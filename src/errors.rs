@@ -5,40 +5,40 @@ use std::fmt::{Display, Formatter, Result};
 // Maybe create modules?
 
 #[derive(Debug, PartialEq, Eq)]
-// TODO: Does this InitError make sense? Should it be simpler or just use error::Error?
-pub enum InitError {
+// TODO: Does this StartError make sense? Should it be simpler or just use error::Error?
+pub enum StartError {
     EmptySecretWord,
     NonAlphabeticCharacters,
     NotEnoughGuesses,
 }
 
-impl Display for InitError {
+impl Display for StartError {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self {
-            InitError::EmptySecretWord => write!(f, "Secret word cannot be empty."),
-            InitError::NonAlphabeticCharacters => {
+            StartError::EmptySecretWord => write!(f, "Secret word cannot be empty."),
+            StartError::NonAlphabeticCharacters => {
                 write!(f, "Secret word must contain only alphabetic characters.")
             }
-            InitError::NotEnoughGuesses => write!(f, "Incorrect guess limit must be at least 1."),
+            StartError::NotEnoughGuesses => write!(f, "Incorrect guess limit must be at least 1."),
         }
     }
 }
 
-impl Error for InitError {}
+impl Error for StartError {}
 
-impl From<AllowedFailuresError> for InitError {
+impl From<AllowedFailuresError> for StartError {
     fn from(error: AllowedFailuresError) -> Self {
         match error {
-            AllowedFailuresError::NotEnoughGuesses => InitError::NotEnoughGuesses,
+            AllowedFailuresError::NotEnoughGuesses => StartError::NotEnoughGuesses,
         }
     }
 }
 
-impl From<SecretWordError> for InitError {
+impl From<SecretWordError> for StartError {
     fn from(error: SecretWordError) -> Self {
         match error {
-            SecretWordError::EmptySecretWord => InitError::EmptySecretWord,
-            SecretWordError::NonAlphabeticCharacters => InitError::NonAlphabeticCharacters,
+            SecretWordError::EmptySecretWord => StartError::EmptySecretWord,
+            SecretWordError::NonAlphabeticCharacters => StartError::NonAlphabeticCharacters,
         }
     }
 }

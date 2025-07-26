@@ -1,8 +1,8 @@
+use crate::errors::StartError;
 use crate::failures::AllowedFailures;
 use crate::results::GuessResult;
-use crate::results::InitResult;
 use crate::secret_word::SecretWord;
-use crate::state::GameState;
+use crate::states::GameState;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -15,11 +15,11 @@ pub struct Hangman {
 }
 
 impl Hangman {
-    pub fn init(word: &str, allowed_failures: isize) -> InitResult {
+    pub fn start(word: &str, allowed_failures: isize) -> Result<Hangman, StartError> {
         Ok(Hangman {
-            failures: AllowedFailures::limit(allowed_failures)?,
+            failures: AllowedFailures::from(allowed_failures)?,
             guessed_chars: HashMap::new(),
-            secret_word: SecretWord::new(word)?,
+            secret_word: SecretWord::from(word)?,
             state: GameState::InProgress,
         })
     }
@@ -57,7 +57,7 @@ impl Hangman {
         } else {
             self.guessed_chars.insert(upper_char, false);
             self.failures.consume();
-            if self.failures.none_left() {
+            if !self.failures.any_left() {
                 self.state = GameState::Lost;
             }
             GuessResult::Incorrect
