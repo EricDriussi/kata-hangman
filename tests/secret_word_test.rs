@@ -4,9 +4,9 @@ use rstest::rstest;
 
 #[test]
 fn does_not_build_without_word() {
-    let word = SecretWord::from("");
+    let secret_word = SecretWord::from("");
 
-    assert!(word.is_err_and(|e| matches!(e, SecretWordError::EmptySecretWord)));
+    assert!(secret_word.is_err_and(|e| matches!(e, SecretWordError::EmptySecretWord)));
 }
 
 #[rstest]
@@ -18,79 +18,75 @@ fn does_not_build_without_word() {
 #[case("-")]
 fn does_not_build_with_invalid_chars_in_word(#[case] invalid_char: char) {
     let invalid_word = format!("a{invalid_char}Word");
-    let word = SecretWord::from(&invalid_word);
 
-    assert!(word.is_err_and(|e| matches!(e, SecretWordError::NonAlphabeticCharacters)));
+    let secret_word = SecretWord::from(&invalid_word);
+
+    assert!(secret_word.is_err_and(|e| matches!(e, SecretWordError::NonAlphabeticCharacters)));
 }
 
 #[test]
 fn initially_displays_all_chars_as_hidden() {
-    let word = SecretWord::from("abc");
+    let secret_word = SecretWord::from("abc").unwrap();
 
-    let word: String = word.unwrap().display();
-
-    assert_eq!(word, "___");
+    assert_eq!(secret_word.display(), "___");
 }
 
 #[test]
 fn can_tell_if_word_contains_char() {
-    let word = SecretWord::from("abc");
+    let secret_word = SecretWord::from("abc").unwrap();
 
-    assert!(word.unwrap().contains('a'));
+    assert!(secret_word.contains('a'));
 }
 
 #[test]
 fn can_tell_if_word_does_not_contain_char() {
-    let word = SecretWord::from("abc");
+    let secret_word = SecretWord::from("abc").unwrap();
 
-    assert!(!word.unwrap().contains('x'));
+    assert!(!secret_word.contains('x'));
 }
 
 #[test]
 fn displays_revealed_chars() {
-    let mut word = SecretWord::from("abc").unwrap();
-    word.reveal('a');
-    word.reveal('c');
+    let mut secret_word = SecretWord::from("abc").unwrap();
 
-    let word: String = word.display();
+    secret_word.reveal('a');
+    secret_word.reveal('c');
 
-    assert_eq!(word, "A_C");
+    assert_eq!(secret_word.display(), "A_C");
 }
 
 #[test]
 fn displays_all_instances_of_revealed_char() {
-    let mut word = SecretWord::from("aba").unwrap();
-    word.reveal('a');
+    let mut secret_word = SecretWord::from("aba").unwrap();
 
-    let word: String = word.display();
+    secret_word.reveal('a');
 
-    assert_eq!(word, "A_A");
+    assert_eq!(secret_word.display(), "A_A");
 }
 
 #[test]
 fn does_not_reveal_char_not_in_word() {
-    let mut word = SecretWord::from("abc").unwrap();
-    word.reveal('x');
+    let mut secret_word = SecretWord::from("abc").unwrap();
 
-    let word: String = word.display();
+    secret_word.reveal('x');
 
-    assert_eq!(word, "___");
+    assert_eq!(secret_word.display(), "___");
 }
 
 #[test]
 fn can_tell_if_all_chars_are_revealed() {
-    let mut word = SecretWord::from("abc").unwrap();
-    word.reveal('a');
-    word.reveal('b');
-    word.reveal('c');
+    let mut secret_word = SecretWord::from("abc").unwrap();
+    secret_word.reveal('a');
+    secret_word.reveal('b');
+    secret_word.reveal('c');
 
-    assert!(word.is_revealed());
+    assert!(secret_word.is_revealed());
 }
 #[test]
 fn can_tell_if_not_all_chars_are_revealed() {
-    let mut word = SecretWord::from("abc").unwrap();
-    word.reveal('a');
-    word.reveal('b');
+    let mut secret_word = SecretWord::from("abc").unwrap();
+    secret_word.reveal('a');
+    secret_word.reveal('b');
 
-    assert!(!word.is_revealed());
+    assert!(!secret_word.is_revealed());
 }

@@ -41,6 +41,21 @@ fn displays_non_case_convertible_char_as_is() {
 }
 
 #[test]
+fn can_tell_if_not_guessed() {
+    let secret_char = SecretChar::from('a').unwrap();
+
+    assert!(!secret_char.is_guessed());
+}
+
+#[test]
+fn can_tell_if_guessed() {
+    let mut secret_char = SecretChar::from('a').unwrap();
+    secret_char.reveal();
+
+    assert!(secret_char.is_guessed());
+}
+
+#[test]
 fn can_tell_if_matches() {
     let secret_char = SecretChar::from('a').unwrap();
 

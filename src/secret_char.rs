@@ -25,11 +25,15 @@ impl SecretChar {
         }
     }
 
+    pub fn matches(&self, char: char) -> bool {
+        self.char.eq_ignore_ascii_case(&char)
+    }
+
     pub fn reveal(&mut self) {
         self.guessed = true;
     }
 
-    pub fn matches(&self, char: char) -> bool {
-        self.char.eq_ignore_ascii_case(&char)
+    pub fn is_guessed(&self) -> bool {
+        self.guessed
     }
 }
