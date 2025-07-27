@@ -1,17 +1,17 @@
+use crate::char::Char;
 use crate::errors::{GuessError, StartError};
 use crate::failures::AllowedFailures;
+use crate::guessed_chars::GuessedChars;
 use crate::results::GuessResult;
 use crate::secret_word::SecretWord;
 use crate::states::GameState;
-use std::collections::HashMap;
-use crate::char::Char;
+use std::collections::HashSet;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Hangman {
     secret_word: SecretWord,
     failures: AllowedFailures,
-    // TODO: Should this be a GuessedChars VO?
-    guessed_chars: HashMap<char, bool>,
+    guessed_chars: GuessedChars,
     state: GameState,
 }
 
@@ -19,7 +19,7 @@ impl Hangman {
     pub fn start(word: &str, allowed_failures: isize) -> Result<Hangman, StartError> {
         Ok(Hangman {
             failures: AllowedFailures::from(allowed_failures)?,
-            guessed_chars: HashMap::new(),
+            guessed_chars: GuessedChars::none(),
             secret_word: SecretWord::from(word)?,
             state: GameState::InProgress,
         })
@@ -34,31 +34,21 @@ impl Hangman {
             return Err(GuessError::GameNotInProgress);
         }
 
-        let up_ch = Char::from(character)?;
+        let char = Char::from(character)?;
 
-        if !character.is_alphabetic() {
-            return Err(GuessError::InvalidCharacter);
-        }
-
-        let upper_char = character.to_uppercase().next().unwrap_or(character);
-
-        if self
-            .guessed_chars
-            .keys()
-            .any(|&secret_char| secret_char.eq(&upper_char))
-        {
+        if self.guessed_chars.already_guessed(&char) {
             return Ok(GuessResult::Duplicate);
         }
 
-        if self.secret_word.contains(&up_ch) {
-            self.guessed_chars.insert(upper_char, true);
-            self.secret_word.reveal(&up_ch);
+        if self.secret_word.contains(&char) {
+            self.secret_word.reveal(&char);
+            self.guessed_chars.add_correct(char);
             if self.secret_word.is_revealed() {
                 self.state = GameState::Won;
             }
             Ok(GuessResult::Correct)
         } else {
-            self.guessed_chars.insert(upper_char, false);
+            self.guessed_chars.add_incorrect(char);
             self.failures.consume();
             if !self.failures.any_left() {
                 self.state = GameState::Lost;
@@ -72,22 +62,17 @@ impl Hangman {
     }
 
     pub fn already_guessed(&self) -> String {
-        let (correct_guesses, incorrect_guesses): (Vec<_>, Vec<_>) = self
-            .guessed_chars
-            .iter()
-            .partition(|&(_, &was_successful)| was_successful);
-
         format!(
             "\n\tCorrect guesses: {}\n\tIncorrect guesses: {}",
-            Self::format_guesses(correct_guesses),
-            Self::format_guesses(incorrect_guesses)
+            Self::format_guesses(self.guessed_chars.correct_guesses()),
+            Self::format_guesses(self.guessed_chars.incorrect_guesses())
         )
     }
 
-    fn format_guesses(chars: Vec<(&char, &bool)>) -> String {
+    fn format_guesses(chars: HashSet<&Char>) -> String {
         chars
             .into_iter()
-            .map(|(c, _)| c.to_string())
+            .map(ToString::to_string)
             .collect::<Vec<String>>()
             .join(", ")
     }
