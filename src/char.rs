@@ -1,7 +1,7 @@
 use std::fmt;
 use crate::errors::CharError;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct Char {
     char: char,
 }
@@ -16,6 +16,7 @@ impl Char {
         })
     }
 
+    // TODO: impl eq?
     pub fn matches(&self, char: char) -> bool {
         self.char.eq_ignore_ascii_case(&char)
     }

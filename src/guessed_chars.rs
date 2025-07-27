@@ -1,0 +1,46 @@
+use crate::char::Char;
+use crate::guessed_char::GuessedChar;
+use std::collections::HashSet;
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct GuessedChars {
+    chars: HashSet<GuessedChar>,
+}
+
+impl GuessedChars {
+    pub fn none() -> Self {
+        GuessedChars {
+            chars: HashSet::new(),
+        }
+    }
+
+    pub fn add_correct(&mut self, char: Char) {
+        self.chars.insert(GuessedChar::correct(char));
+    }
+
+    pub fn add_incorrect(&mut self, char: Char) {
+        self.chars.insert(GuessedChar::incorrect(char));
+    }
+
+    pub fn already_guessed(&self, char: &Char) -> bool {
+        self.chars
+            .iter()
+            .any(|guessed_char| guessed_char.matches(char))
+    }
+
+    pub fn correct_guesses(&self) -> HashSet<&Char> {
+        self.chars
+            .iter()
+            .filter(|guessed_char| guessed_char.was_correct())
+            .map(GuessedChar::char)
+            .collect()
+    }
+
+    pub fn incorrect_guesses(&self) -> HashSet<&Char> {
+        self.chars
+            .iter()
+            .filter(|guessed_char| guessed_char.was_incorrect())
+            .map(GuessedChar::char)
+            .collect()
+    }
+}
