@@ -24,16 +24,16 @@ impl SecretWord {
         })
     }
 
-    pub fn contains(&self, char: &AlphabeticChar) -> bool {
+    pub fn contains(&self, alphabetic_char: &AlphabeticChar) -> bool {
         self.word
             .iter()
-            .any(|secret_char| secret_char.eq(char))
+            .any(|secret_char| secret_char.eq(alphabetic_char))
     }
 
-    pub fn reveal(&mut self, char: &AlphabeticChar) {
+    pub fn reveal(&mut self, alphabetic_char: &AlphabeticChar) {
         self.word
             .iter_mut()
-            .filter(|secret_char| secret_char.eq(char))
+            .filter(|secret_char| secret_char.eq(alphabetic_char))
             .for_each(SecretChar::reveal);
     }
 
