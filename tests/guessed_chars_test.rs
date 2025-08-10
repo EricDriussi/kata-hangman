@@ -1,5 +1,6 @@
-use hangman::alphabetic_char::AlphabeticChar;
+mod helpers;
 use hangman::guessed_chars::GuessedChars;
+use helpers::alphabetic_char_from;
 
 #[test]
 pub fn can_add_correct_guess() {
@@ -39,8 +40,4 @@ pub fn can_tell_if_already_guessed_incorrectly() {
     guessed_chars.add_incorrect(alphabetic_char_from('a'));
 
     assert!(guessed_chars.already_guessed(&alphabetic_char_from('a')));
-}
-
-fn alphabetic_char_from(c: char) -> AlphabeticChar {
-    AlphabeticChar::from(c).unwrap()
 }

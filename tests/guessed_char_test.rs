@@ -1,5 +1,6 @@
-use hangman::alphabetic_char::AlphabeticChar;
+mod helpers;
 use hangman::guessed_char::GuessedChar;
+use helpers::alphabetic_char_from;
 
 #[test]
 fn builds_correct() {
@@ -35,8 +36,4 @@ fn is_not_eq_based_on_underlying_char() {
 
     let different_char = alphabetic_char_from('b');
     assert_ne!(guessed_char, different_char);
-}
-
-fn alphabetic_char_from(c: char) -> AlphabeticChar {
-    AlphabeticChar::from(c).unwrap()
 }

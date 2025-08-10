@@ -3,6 +3,10 @@ use hangman::hangman::Hangman;
 use hangman::results::GuessResult;
 use hangman::states::GameState;
 use rstest::rstest;
+use rstest_reuse::apply;
+
+mod helpers;
+use helpers::invalid_chars;
 
 const VALID_ALLOWED_FAILURES: isize = 1;
 const VALID_WORD: &str = "aWordñ";
@@ -21,13 +25,7 @@ fn starts_with_in_progress_state() {
     assert!(game.is_ok_and(|g| g.state() == GameState::InProgress));
 }
 
-#[rstest]
-#[case("3")]
-#[case(" ")]
-#[case("!")]
-#[case("#")]
-#[case(".")]
-#[case("-")]
+#[apply(invalid_chars)]
 fn does_not_accept_invalid_guesses(#[case] invalid_char: char) {
     let game = Hangman::start(VALID_WORD, VALID_ALLOWED_FAILURES);
 

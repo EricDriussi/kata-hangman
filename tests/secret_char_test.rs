@@ -1,5 +1,6 @@
-use hangman::alphabetic_char::AlphabeticChar;
+mod helpers;
 use hangman::secret_char::SecretChar;
+use helpers::alphabetic_char_from;
 
 #[test]
 fn initially_displays_char_as_hidden() {
@@ -56,8 +57,4 @@ fn is_not_eq_based_on_underlying_char() {
 
     let different_char = alphabetic_char_from('b');
     assert_ne!(secret_char, different_char);
-}
-
-fn alphabetic_char_from(c: char) -> AlphabeticChar {
-    AlphabeticChar::from(c).unwrap()
 }

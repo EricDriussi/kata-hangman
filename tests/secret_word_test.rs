@@ -2,6 +2,10 @@ use hangman::alphabetic_char::AlphabeticChar;
 use hangman::errors::SecretWordError;
 use hangman::secret_word::SecretWord;
 use rstest::rstest;
+use rstest_reuse::apply;
+
+mod helpers;
+use helpers::invalid_chars;
 
 #[test]
 fn does_not_build_without_word() {
@@ -10,13 +14,7 @@ fn does_not_build_without_word() {
     assert!(secret_word.is_err_and(|e| matches!(e, SecretWordError::EmptySecretWord)));
 }
 
-#[rstest]
-#[case("3")]
-#[case(" ")]
-#[case("!")]
-#[case("#")]
-#[case(".")]
-#[case("-")]
+#[apply(invalid_chars)]
 fn does_not_build_with_invalid_chars_in_word(#[case] invalid_char: char) {
     let invalid_word = format!("a{invalid_char}Word");
 

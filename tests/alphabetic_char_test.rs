@@ -1,14 +1,11 @@
+mod helpers;
 use hangman::alphabetic_char::AlphabeticChar;
 use hangman::errors::CharError;
+use helpers::invalid_chars;
 use rstest::rstest;
+use rstest_reuse::{self, *};
 
-#[rstest]
-#[case('3')]
-#[case(' ')]
-#[case('!')]
-#[case('#')]
-#[case('.')]
-#[case('-')]
+#[apply(invalid_chars)]
 fn does_not_build_from_invalid_char(#[case] invalid_char: char) {
     let alphabetic_char = AlphabeticChar::from(invalid_char);
 
