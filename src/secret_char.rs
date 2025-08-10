@@ -3,23 +3,11 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct SecretChar {
-    char: AlphabeticChar,
+    alphabetic_char: AlphabeticChar,
     hidden: bool,
 }
 
 impl SecretChar {
-    pub fn from(char: AlphabeticChar) -> Self {
-        SecretChar {
-            char,
-            hidden: true,
-        }
-    }
-
-    // TODO: Implement PartialEq<Char>?
-    pub fn matches(&self, char: &AlphabeticChar) -> bool {
-        self.char.eq(char)
-    }
-
     pub fn reveal(&mut self) {
         self.hidden = false;
     }
@@ -34,7 +22,25 @@ impl fmt::Display for SecretChar {
         if self.hidden {
             write!(f, "_")
         } else {
-            write!(f, "{}", self.char)
+            write!(f, "{}", self.alphabetic_char)
         }
+    }
+}
+
+impl From<AlphabeticChar> for SecretChar {
+    fn from(char: AlphabeticChar) -> Self {
+        SecretChar { alphabetic_char: char, hidden: true }
+    }
+}
+
+impl PartialEq<AlphabeticChar> for SecretChar {
+    fn eq(&self, other: &AlphabeticChar) -> bool {
+        self.alphabetic_char.eq(other)
+    }
+}
+
+impl PartialEq<AlphabeticChar> for &mut SecretChar {
+    fn eq(&self, other: &AlphabeticChar) -> bool {
+        self.alphabetic_char.eq(other)
     }
 }
