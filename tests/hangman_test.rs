@@ -27,9 +27,9 @@ fn starts_with_in_progress_state() {
 
 #[apply(invalid_chars)]
 fn does_not_accept_invalid_guesses(#[case] invalid_char: char) {
-    let game = Hangman::start(VALID_WORD, VALID_ALLOWED_FAILURES);
+    let mut game = Hangman::start(VALID_WORD, VALID_ALLOWED_FAILURES).unwrap();
 
-    let guess_result = game.unwrap().guess(invalid_char);
+    let guess_result = game.guess(invalid_char);
 
     assert!(guess_result.is_err_and(|e| matches!(e, GuessError::InvalidCharacter)));
 }
@@ -48,9 +48,9 @@ fn warns_of_duplicate_when_repeating_a_correct_guess() {
     let mut game = Hangman::start("abc", 1).unwrap();
 
     game.guess('a').unwrap();
-    let second_guess_result = game.guess('a').unwrap();
+    let duplicate_guess = game.guess('a').unwrap();
 
-    assert!(matches!(second_guess_result, GuessResult::Duplicate));
+    assert!(matches!(duplicate_guess, GuessResult::Duplicate));
 }
 
 #[test]
