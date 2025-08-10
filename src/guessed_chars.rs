@@ -1,4 +1,4 @@
-use crate::char::Char;
+use crate::alphabetic_char::AlphabeticChar;
 use crate::guessed_char::GuessedChar;
 use std::collections::HashSet;
 
@@ -14,21 +14,21 @@ impl GuessedChars {
         }
     }
 
-    pub fn add_correct(&mut self, char: Char) {
+    pub fn add_correct(&mut self, char: AlphabeticChar) {
         self.chars.insert(GuessedChar::correct(char));
     }
 
-    pub fn add_incorrect(&mut self, char: Char) {
+    pub fn add_incorrect(&mut self, char: AlphabeticChar) {
         self.chars.insert(GuessedChar::incorrect(char));
     }
 
-    pub fn already_guessed(&self, char: &Char) -> bool {
+    pub fn already_guessed(&self, char: &AlphabeticChar) -> bool {
         self.chars
             .iter()
             .any(|guessed_char| guessed_char.matches(char))
     }
 
-    pub fn correct_guesses(&self) -> HashSet<&Char> {
+    pub fn correct_guesses(&self) -> HashSet<&AlphabeticChar> {
         self.chars
             .iter()
             .filter(|guessed_char| guessed_char.was_correct())
@@ -36,7 +36,7 @@ impl GuessedChars {
             .collect()
     }
 
-    pub fn incorrect_guesses(&self) -> HashSet<&Char> {
+    pub fn incorrect_guesses(&self) -> HashSet<&AlphabeticChar> {
         self.chars
             .iter()
             .filter(|guessed_char| guessed_char.was_incorrect())

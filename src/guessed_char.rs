@@ -1,28 +1,28 @@
-use crate::char::Char;
+use crate::alphabetic_char::AlphabeticChar;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct GuessedChar {
-    char: Char,
+    char: AlphabeticChar,
     guessed_correctly: bool,
 }
 
 // TODO: impl From<GuessedChar> for Char {}?
 impl GuessedChar {
-    pub fn correct(char: Char) -> Self {
+    pub fn correct(char: AlphabeticChar) -> Self {
         GuessedChar {
             char,
             guessed_correctly: true,
         }
     }
 
-    pub fn incorrect(char: Char) -> Self {
+    pub fn incorrect(char: AlphabeticChar) -> Self {
         GuessedChar {
             char,
             guessed_correctly: false,
         }
     }
 
-    pub fn matches(&self, char: &Char) -> bool {
+    pub fn matches(&self, char: &AlphabeticChar) -> bool {
         self.char.eq(char)
     }
 
@@ -34,7 +34,7 @@ impl GuessedChar {
         !self.guessed_correctly
     }
 
-    pub fn char(&self) -> &Char {
+    pub fn char(&self) -> &AlphabeticChar {
         &self.char
     }
 }

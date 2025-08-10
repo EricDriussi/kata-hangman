@@ -1,4 +1,4 @@
-use crate::char::Char;
+use crate::alphabetic_char::AlphabeticChar;
 use crate::errors::{GuessError, StartError};
 use crate::failures::AllowedFailures;
 use crate::guessed_chars::GuessedChars;
@@ -34,7 +34,7 @@ impl Hangman {
             return Err(GuessError::GameNotInProgress);
         }
 
-        let char = Char::from(character)?;
+        let char = AlphabeticChar::from(character)?;
 
         if self.guessed_chars.already_guessed(&char) {
             return Ok(GuessResult::Duplicate);
@@ -69,7 +69,7 @@ impl Hangman {
         )
     }
 
-    fn format_guesses(chars: HashSet<&Char>) -> String {
+    fn format_guesses(chars: HashSet<&AlphabeticChar>) -> String {
         chars
             .into_iter()
             .map(ToString::to_string)

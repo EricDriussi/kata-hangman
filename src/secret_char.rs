@@ -1,14 +1,14 @@
-use crate::char::Char;
+use crate::alphabetic_char::AlphabeticChar;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct SecretChar {
-    char: Char,
+    char: AlphabeticChar,
     hidden: bool,
 }
 
 impl SecretChar {
-    pub fn from(char: Char) -> Self {
+    pub fn from(char: AlphabeticChar) -> Self {
         SecretChar {
             char,
             hidden: true,
@@ -16,7 +16,7 @@ impl SecretChar {
     }
 
     // TODO: Implement PartialEq<Char>?
-    pub fn matches(&self, char: &Char) -> bool {
+    pub fn matches(&self, char: &AlphabeticChar) -> bool {
         self.char.eq(char)
     }
 

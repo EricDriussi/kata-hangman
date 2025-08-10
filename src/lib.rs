@@ -5,6 +5,6 @@ pub mod states;
 pub mod failures;
 pub mod secret_word;
 pub mod secret_char;
-pub mod char;
+pub mod alphabetic_char;
 pub mod guessed_char;
 pub mod guessed_chars;

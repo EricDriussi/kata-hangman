@@ -1,28 +1,30 @@
 use std::fmt;
 use crate::errors::CharError;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
-pub struct Char {
+#[derive(Debug, Eq, Hash, Clone)]
+pub struct AlphabeticChar {
     char: char,
 }
 
-impl Char {
+impl AlphabeticChar {
     pub fn from(c: char) -> Result<Self, CharError> {
         if !c.is_alphabetic() {
             return Err(CharError::NonAlphabeticChar);
         }
-        Ok(Char {
+        Ok(AlphabeticChar {
             char: c.to_ascii_uppercase(),
         })
     }
 
-    // TODO: impl eq?
-    pub fn matches(&self, char: char) -> bool {
-        self.char.eq_ignore_ascii_case(&char)
+}
+
+impl PartialEq for AlphabeticChar {
+    fn eq(&self, other: &Self) -> bool {
+        self.char.eq_ignore_ascii_case(&other.char)
     }
 }
 
-impl fmt::Display for Char {
+impl fmt::Display for AlphabeticChar {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.char)
     }

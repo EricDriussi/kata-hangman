@@ -1,4 +1,4 @@
-use crate::char::Char;
+use crate::alphabetic_char::AlphabeticChar;
 use crate::errors::SecretWordError;
 use crate::secret_char::SecretChar;
 use std::fmt;
@@ -18,19 +18,19 @@ impl SecretWord {
             word: word
                 .to_uppercase()
                 .chars()
-                .map(Char::from)
+                .map(AlphabeticChar::from)
                 .map(|char| char.map(SecretChar::from))
                 .collect::<Result<Vec<SecretChar>, _>>()?,
         })
     }
 
-    pub fn contains(&self, char: &Char) -> bool {
+    pub fn contains(&self, char: &AlphabeticChar) -> bool {
         self.word
             .iter()
             .any(|secret_char| secret_char.matches(char))
     }
 
-    pub fn reveal(&mut self, char: &Char) {
+    pub fn reveal(&mut self, char: &AlphabeticChar) {
         self.word
             .iter_mut()
             .filter(|secret_char| secret_char.matches(char))
