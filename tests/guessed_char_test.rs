@@ -2,33 +2,41 @@ use hangman::alphabetic_char::AlphabeticChar;
 use hangman::guessed_char::GuessedChar;
 
 #[test]
-fn can_tell_if_was_correct() {
-    let guessed_char = GuessedChar::correct(AlphabeticChar::from('a').unwrap());
-
-    assert!(guessed_char.was_correct());
-}
-
-#[test]
-fn can_tell_if_was_incorrect() {
-    let guessed_char = GuessedChar::incorrect(AlphabeticChar::from('a').unwrap());
-
-    assert!(guessed_char.was_incorrect());
-}
-
-#[test]
-fn matches_when_underlying_char_matches() {
-    let alphabetic_char = AlphabeticChar::from('a').unwrap();
+fn builds_correct() {
+    let alphabetic_char = alphabetic_char_from('a');
     let guessed_char = GuessedChar::correct(alphabetic_char);
 
-    let the_same_char = AlphabeticChar::from('a').unwrap();
+    assert!(matches!(guessed_char, GuessedChar::Correct(_)));
+    assert_eq!(guessed_char, alphabetic_char_from('a'));
+}
+
+#[test]
+fn builds_incorrect() {
+    let alphabetic_char = alphabetic_char_from('a');
+    let guessed_char = GuessedChar::incorrect(alphabetic_char);
+
+    assert!(matches!(guessed_char, GuessedChar::Incorrect(_)));
+    assert_eq!(guessed_char, alphabetic_char_from('a'));
+}
+
+#[test]
+fn is_eq_based_on_underlying_char() {
+    let alphabetic_char = alphabetic_char_from('a');
+    let guessed_char = GuessedChar::correct(alphabetic_char);
+
+    let the_same_char = alphabetic_char_from('a');
     assert_eq!(guessed_char, the_same_char);
 }
 
 #[test]
-fn does_not_match_when_underlying_char_does_not_match() {
-    let alphabetic_char = AlphabeticChar::from('a').unwrap();
+fn is_not_eq_based_on_underlying_char() {
+    let alphabetic_char = alphabetic_char_from('a');
     let guessed_char = GuessedChar::correct(alphabetic_char);
 
-    let different_char = AlphabeticChar::from('b').unwrap();
+    let different_char = alphabetic_char_from('b');
     assert_ne!(guessed_char, different_char);
+}
+
+fn alphabetic_char_from(c: char) -> AlphabeticChar {
+    AlphabeticChar::from(c).unwrap()
 }

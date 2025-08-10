@@ -3,38 +3,44 @@ use hangman::guessed_chars::GuessedChars;
 
 #[test]
 pub fn can_add_correct_guess() {
-    let char = AlphabeticChar::from('a').unwrap();
     let mut guessed_chars = GuessedChars::none();
 
-    guessed_chars.add_correct(char.clone());
+    guessed_chars.add_correct(alphabetic_char_from('a'));
 
-    assert!(guessed_chars.correct_guesses().contains(&char));
+    assert!(guessed_chars
+        .correct_guesses()
+        .contains(&alphabetic_char_from('a')));
 }
 
 #[test]
 pub fn can_add_incorrect_guess() {
-    let char = AlphabeticChar::from('a').unwrap();
     let mut guessed_chars = GuessedChars::none();
 
-    guessed_chars.add_incorrect(char.clone());
+    guessed_chars.add_incorrect(alphabetic_char_from('a'));
 
-    assert!(guessed_chars.incorrect_guesses().contains(&char));
+    assert!(guessed_chars
+        .incorrect_guesses()
+        .contains(&alphabetic_char_from('a')));
 }
 
 #[test]
 pub fn can_tell_if_already_guessed_correctly() {
     let mut guessed_chars = GuessedChars::none();
-    let correct_char = AlphabeticChar::from('a').unwrap();
-    guessed_chars.add_correct(correct_char.clone());
 
-    assert!(guessed_chars.already_guessed(&correct_char));
+    guessed_chars.add_correct(alphabetic_char_from('a'));
+
+    assert!(guessed_chars.already_guessed(&alphabetic_char_from('a')));
 }
 
 #[test]
 pub fn can_tell_if_already_guessed_incorrectly() {
     let mut guessed_chars = GuessedChars::none();
-    let incorrect_char = AlphabeticChar::from('b').unwrap();
-    guessed_chars.add_incorrect(incorrect_char.clone());
 
-    assert!(guessed_chars.already_guessed(&incorrect_char));
+    guessed_chars.add_incorrect(alphabetic_char_from('a'));
+
+    assert!(guessed_chars.already_guessed(&alphabetic_char_from('a')));
+}
+
+fn alphabetic_char_from(c: char) -> AlphabeticChar {
+    AlphabeticChar::from(c).unwrap()
 }

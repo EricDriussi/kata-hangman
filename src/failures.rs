@@ -5,6 +5,7 @@ pub struct AllowedFailures {
     remaining: isize,
 }
 
+// TODO: should this logic be handled by GuessedChars?
 impl AllowedFailures {
     pub fn from(limit: isize) -> Result<Self, AllowedFailuresError> {
         if limit < 1 {
