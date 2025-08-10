@@ -25,7 +25,7 @@ impl GuessedChars {
     pub fn already_guessed(&self, char: &AlphabeticChar) -> bool {
         self.chars
             .iter()
-            .any(|guessed_char| guessed_char.matches(char))
+            .any(|guessed_char| guessed_char.eq(char))
     }
 
     pub fn correct_guesses(&self) -> HashSet<&AlphabeticChar> {

@@ -1,7 +1,7 @@
 use std::fmt;
 use crate::errors::CharError;
 
-#[derive(Debug, Eq, Hash, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct AlphabeticChar {
     char: char,
 }
@@ -16,12 +16,6 @@ impl AlphabeticChar {
         })
     }
 
-}
-
-impl PartialEq for AlphabeticChar {
-    fn eq(&self, other: &Self) -> bool {
-        self.char.eq_ignore_ascii_case(&other.char)
-    }
 }
 
 impl fmt::Display for AlphabeticChar {
