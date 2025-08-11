@@ -1,70 +1,73 @@
 use crate::alphabetic_char::AlphabeticChar;
-use crate::errors::{GuessError, StartError};
+use crate::errors::StartError;
 use crate::failures::AllowedFailures;
 use crate::guessed_chars::GuessedChars;
 use crate::results::GuessResult;
 use crate::secret_word::SecretWord;
-use crate::states::GameState;
 use std::collections::HashSet;
+use std::fmt;
 use std::marker::PhantomData;
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct Hangman {
+pub trait HangmanType {}
+
+pub struct Running;
+impl HangmanType for Running {}
+
+pub struct Stopped;
+impl HangmanType for Stopped {}
+
+pub struct Hangman<S: HangmanType> {
+    _marker: PhantomData<S>,
     secret_word: SecretWord,
     failures: AllowedFailures,
     guessed_chars: GuessedChars,
-    state: GameState,
 }
 
-impl Hangman {
-    pub fn start(word: &str, allowed_failures: isize) -> Result<Hangman, StartError> {
+impl<S: HangmanType> Hangman<S> {
+    pub fn start(word: &str, allowed_failures: isize) -> Result<Hangman<Running>, StartError> {
         Ok(Hangman {
+            _marker: PhantomData,
             failures: AllowedFailures::from(allowed_failures)?,
             guessed_chars: GuessedChars::none(),
             secret_word: SecretWord::from(word)?,
-            state: GameState::InProgress,
         })
     }
+}
 
-    pub fn state(&self) -> GameState {
-        self.state
-    }
+pub enum GameState {
+    InProgress(Hangman<Running>),
+    Won(Hangman<Stopped>),
+    Lost(Hangman<Stopped>),
+}
 
-    pub fn guess(&mut self, character: char) -> Result<GuessResult, GuessError> {
-        if self.state != GameState::InProgress {
-            return Err(GuessError::GameNotInProgress);
-        }
-
+impl Hangman<Running> {
+    pub fn guess(mut self, character: char) -> (GuessResult, GameState) {
         let Ok(char) = AlphabeticChar::from(character) else {
-            return Ok(GuessResult::Invalid);
+            return (GuessResult::Invalid, GameState::InProgress(self));
         };
 
         if self.guessed_chars.already_guessed(&char) {
-            return Ok(GuessResult::Duplicate);
+            return (GuessResult::Duplicate, GameState::InProgress(self));
         }
 
         if self.secret_word.contains(&char) {
-            self.secret_word.reveal(&char);
+            self.secret_word.reveal_char(&char);
             self.guessed_chars.add_correct(char);
             if self.secret_word.is_revealed() {
-                self.state = GameState::Won;
+                return (GuessResult::Correct, GameState::Won(Hangman::from(self)));
             }
-            Ok(GuessResult::Correct)
+            (GuessResult::Correct, GameState::InProgress(self))
         } else {
             self.guessed_chars.add_incorrect(char);
             self.failures.consume();
             if !self.failures.any_left() {
-                self.state = GameState::Lost;
+                return (GuessResult::Incorrect, GameState::Lost(Hangman::from(self)));
             }
-            Ok(GuessResult::Incorrect)
+            (GuessResult::Incorrect, GameState::InProgress(self))
         }
     }
 
-    pub fn remaining_failures(&self) -> isize {
-        self.failures.remaining()
-    }
-
-    pub fn already_guessed(&self) -> String {
+    fn already_guessed(&self) -> String {
         format!(
             "\n\tCorrect guesses: {}\n\tIncorrect guesses: {}",
             Self::format_guesses(self.guessed_chars.correct_guesses()),
@@ -79,98 +82,47 @@ impl Hangman {
             .collect::<Vec<String>>()
             .join(", ")
     }
+}
 
-    pub fn display_word(&self) -> String {
-        self.secret_word.to_string()
+impl fmt::Display for Hangman<Running> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "Secret word: {}\nRemaining failures: {}\nAlready guessed characters: {}",
+            self.secret_word,
+            self.failures.remaining(),
+            self.already_guessed()
+        )
     }
 }
 
-pub trait GameState2 {}
-
-pub struct RunningGame;
-impl GameState2 for RunningGame {}
-
-pub struct StoppedGame;
-impl GameState2 for StoppedGame {}
-
-pub struct Hangman2<S: GameState2> {
-    _marker: PhantomData<S>,
-    secret_word: SecretWord,
-    failures: AllowedFailures,
-    guessed_chars: GuessedChars,
-}
-
-impl<S: GameState2> Hangman2<S> {
-    pub fn start(word: &str, allowed_failures: isize) -> Result<Hangman2<RunningGame>, StartError> {
-        Ok(Hangman2 {
-            _marker: PhantomData,
-            failures: AllowedFailures::from(allowed_failures)?,
-            guessed_chars: GuessedChars::none(),
-            secret_word: SecretWord::from(word)?,
-        })
-    }
-}
-
-pub enum HangmanState {
-    Running(Hangman2<RunningGame>),
-    Stopped(Hangman2<StoppedGame>),
-}
-
-impl Hangman2<RunningGame> {
-    pub fn guess(mut self, character: char) -> (GuessResult, HangmanState) {
-        let Ok(char) = AlphabeticChar::from(character) else {
-            return (GuessResult::Invalid, HangmanState::Running(self));
+impl fmt::Display for Hangman<Stopped> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let remaining_failures = match self.failures.remaining() {
+            0 => String::new(),
+            1 => "You could have failed one more guess\n".to_string(),
+            _ => format!(
+                "You could have failed {} more guesses\n",
+                self.failures.remaining()
+            ),
         };
 
-        if self.guessed_chars.already_guessed(&char) {
-            return (GuessResult::Duplicate, HangmanState::Running(self));
-        }
-
-        if self.secret_word.contains(&char) {
-            self.secret_word.reveal(&char);
-            self.guessed_chars.add_correct(char);
-            if self.secret_word.is_revealed() {
-                return (
-                    GuessResult::Correct,
-                    HangmanState::Stopped(Hangman2 {
-                        _marker: PhantomData,
-                        failures: self.failures,
-                        guessed_chars: self.guessed_chars,
-                        secret_word: self.secret_word,
-                    }),
-                );
-            }
-            (GuessResult::Correct, HangmanState::Running(self))
-        } else {
-            self.guessed_chars.add_incorrect(char);
-            self.failures.consume();
-            if !self.failures.any_left() {
-                return (
-                    GuessResult::Incorrect,
-                    HangmanState::Stopped(Hangman2 {
-                        _marker: PhantomData,
-                        failures: self.failures,
-                        guessed_chars: self.guessed_chars,
-                        secret_word: self.secret_word,
-                    }),
-                );
-            }
-            (GuessResult::Incorrect, HangmanState::Running(self))
-        }
+        write!(
+            f,
+            "Secret word was: {}\n{}",
+            self.secret_word, remaining_failures,
+        )
     }
 }
 
-impl Hangman2<StoppedGame> {
-    // TODO: Actually report the result (win or lost? reveal secret word?)
-    pub fn result(&self) {
-        if self.secret_word.is_revealed() {
-            println!(
-                "Congratulations! You guessed the word: {}",
-                self.secret_word
-            );
-        } else {
-            println!("Game over! The word was: {}", self.secret_word);
+impl From<Hangman<Running>> for Hangman<Stopped> {
+    fn from(mut running_game: Hangman<Running>) -> Self {
+        running_game.secret_word.reveal_word();
+        Hangman {
+            _marker: PhantomData,
+            failures: running_game.failures,
+            guessed_chars: running_game.guessed_chars,
+            secret_word: running_game.secret_word,
         }
-        println!("Remaining failures: {}", self.failures.remaining());
     }
 }
