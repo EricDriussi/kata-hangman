@@ -30,11 +30,15 @@ impl SecretWord {
             .any(|secret_char| secret_char.eq(alphabetic_char))
     }
 
-    pub fn reveal(&mut self, alphabetic_char: &AlphabeticChar) {
+    pub fn reveal_char(&mut self, alphabetic_char: &AlphabeticChar) {
         self.word
             .iter_mut()
             .filter(|secret_char| secret_char.eq(alphabetic_char))
             .for_each(SecretChar::reveal);
+    }
+
+    pub fn reveal_word(&mut self) {
+        self.word.iter_mut().for_each(SecretChar::reveal);
     }
 
     pub fn is_revealed(&self) -> bool {
