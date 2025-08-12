@@ -1,9 +1,10 @@
-pub mod errors;
-pub mod hangman;
-pub mod results;
-pub mod failures;
-pub mod secret_word;
-pub mod secret_char;
 pub mod alphabetic_char;
+pub mod errors;
+pub mod failures;
+pub mod game_state;
 pub mod guessed_char;
 pub mod guessed_chars;
+pub mod hangman;
+pub mod results;
+pub mod secret_char;
+pub mod secret_word;

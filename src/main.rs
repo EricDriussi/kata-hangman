@@ -1,4 +1,5 @@
-use hangman::hangman::{GameState, Hangman, Running};
+use hangman::game_state::GameState;
+use hangman::hangman::generic_hangman::{Hangman, Running};
 use hangman::results::GuessResult;
 use std::io;
 use std::thread::sleep;

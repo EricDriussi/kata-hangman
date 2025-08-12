@@ -1,10 +1,9 @@
-use hangman::hangman::{GameState, Hangman, Running};
+use crate::helpers::invalid_chars;
+use hangman::game_state::GameState;
+use hangman::hangman::generic_hangman::{Hangman, Running};
 use hangman::results::GuessResult;
 use rstest::rstest;
 use rstest_reuse::apply;
-
-mod helpers;
-use helpers::invalid_chars;
 
 const VALID_ALLOWED_FAILURES: isize = 1;
 const VALID_WORD: &str = "aWordñ";
@@ -63,7 +62,7 @@ fn warns_of_duplicate_when_repeating_an_incorrect_guess() {
 fn fails_when_guessing_incorrectly() {
     let game = Hangman::<Running>::start("abc", 1).unwrap();
 
-    let (guess_result, _) = game.guess('z');
+    let (guess_result, _) = game.guess('x');
 
     assert!(matches!(guess_result, GuessResult::Incorrect));
 }
@@ -87,13 +86,25 @@ fn game_is_won_when_word_is_guessed() {
 }
 
 #[test]
-fn shows_already_guessed_chars() {
-    let game = Hangman::<Running>::start("abc", 2).unwrap();
+fn shows_secret_word() {
+    let game = Hangman::<Running>::start("abc", 1).unwrap();
 
-    let (_, game_state) = game.guess('a');
+    let correct_char = 'a';
+    let (_, game_state) = game.guess(correct_char);
     let GameState::InProgress(game) = game_state else {
         panic!("Expected game to be InProgress");
     };
+
+    assert!(game.to_string().contains(&format!(
+        "Secret word: {}__\n",
+        correct_char.to_ascii_uppercase()
+    )));
+}
+
+#[test]
+fn shows_remaining_failures() {
+    let allowed_failures = 2;
+    let game = Hangman::<Running>::start("abc", allowed_failures).unwrap();
 
     let (_, game_state) = game.guess('x');
     let GameState::InProgress(game) = game_state else {
@@ -102,5 +113,28 @@ fn shows_already_guessed_chars() {
 
     assert!(game
         .to_string()
-        .contains("\n\tCorrect guesses: A\n\tIncorrect guesses: X"));
+        .contains(&format!("Remaining failures: {}\n", allowed_failures - 1)));
+}
+
+#[test]
+fn shows_already_guessed_chars() {
+    let game = Hangman::<Running>::start("abc", 2).unwrap();
+
+    let correct_char = 'a';
+    let (_, game_state) = game.guess(correct_char);
+    let GameState::InProgress(game) = game_state else {
+        panic!("Expected game to be InProgress");
+    };
+
+    let incorrect_char = 'x';
+    let (_, game_state) = game.guess(incorrect_char);
+    let GameState::InProgress(game) = game_state else {
+        panic!("Expected game to be InProgress");
+    };
+
+    assert!(game.to_string().contains(&format!(
+        "\n\tCorrect guesses: {}\n\tIncorrect guesses: {}",
+        correct_char.to_ascii_uppercase(),
+        incorrect_char.to_ascii_uppercase()
+    )));
 }

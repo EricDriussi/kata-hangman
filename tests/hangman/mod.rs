@@ -1,0 +1,2 @@
+mod running_hangman_test;
+mod stopped_hangman_test;
