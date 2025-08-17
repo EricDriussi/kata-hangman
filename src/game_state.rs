@@ -1,5 +1,5 @@
-use crate::hangman::running_hangman::RunningHangman;
-use crate::hangman::stopped_hangman::StoppedHangman;
+use crate::hangman::running::RunningHangman;
+use crate::hangman::stopped::StoppedHangman;
 
 pub enum GameState {
     InProgress(RunningHangman),

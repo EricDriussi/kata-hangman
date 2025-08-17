@@ -1,11 +1,11 @@
 use hangman::game_state::GameState;
-use hangman::hangman::running_hangman::RunningHangman;
-use hangman::hangman::stopped_hangman::StoppedHangman;
+use hangman::hangman::factory::Hangman;
+use hangman::hangman::stopped::StoppedHangman;
 
 #[test]
 fn reveals_secret_word() {
     let secret_word = "abc";
-    let game = RunningHangman::start(secret_word, 123).unwrap();
+    let game = Hangman::start(secret_word, 123).unwrap();
 
     let stopped_game = StoppedHangman::from(game);
 
@@ -18,7 +18,7 @@ fn reveals_secret_word() {
 #[test]
 fn shows_remaining_failures() {
     let allowed_failures = 2;
-    let game = RunningHangman::start("abc", allowed_failures).unwrap();
+    let game = Hangman::start("abc", allowed_failures).unwrap();
 
     let stopped_game = StoppedHangman::from(game);
 
@@ -30,7 +30,7 @@ fn shows_remaining_failures() {
 #[test]
 fn shows_no_remaining_failures() {
     let allowed_failures = 1;
-    let game = RunningHangman::start("abc", allowed_failures).unwrap();
+    let game = Hangman::start("abc", allowed_failures).unwrap();
     let (_, game_state) = game.guess('x');
 
     let GameState::Lost(game) = game_state else {

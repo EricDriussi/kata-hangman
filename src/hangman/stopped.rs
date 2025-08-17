@@ -1,5 +1,5 @@
 use crate::failures::AllowedFailures;
-use crate::hangman::running_hangman::RunningHangman;
+use crate::hangman::running::RunningHangman;
 use crate::secret_word::SecretWord;
 use std::fmt;
 

@@ -1,2 +1,3 @@
-mod running_hangman_test;
-mod stopped_hangman_test;
+mod running_test;
+mod stopped_test;
+mod factory_test;
