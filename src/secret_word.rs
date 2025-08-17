@@ -1,6 +1,6 @@
-use crate::alphabetic_char::AlphabeticChar;
+use crate::chars::alphabetic::AlphabeticChar;
 use crate::errors::SecretWordError;
-use crate::secret_char::SecretChar;
+use crate::chars::secret::SecretChar;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]

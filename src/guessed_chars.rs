@@ -1,5 +1,5 @@
-use crate::alphabetic_char::AlphabeticChar;
-use crate::guessed_char::GuessedChar;
+use crate::chars::alphabetic::AlphabeticChar;
+use crate::chars::guessed::GuessedChar;
 use std::collections::HashSet;
 
 #[derive(Debug, PartialEq, Eq)]

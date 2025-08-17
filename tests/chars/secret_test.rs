@@ -1,6 +1,5 @@
-mod helpers;
-use hangman::secret_char::SecretChar;
-use helpers::alphabetic_char_from;
+use crate::helpers::alphabetic_char_from;
+use hangman::chars::secret::SecretChar;
 
 #[test]
 fn initially_displays_char_as_hidden() {

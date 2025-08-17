@@ -1,4 +1,4 @@
-use crate::alphabetic_char::AlphabeticChar;
+use crate::chars::alphabetic::AlphabeticChar;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub enum GuessedChar {

@@ -1,6 +1,5 @@
-mod helpers;
-use hangman::guessed_char::GuessedChar;
-use helpers::alphabetic_char_from;
+use crate::helpers::alphabetic_char_from;
+use hangman::chars::guessed::GuessedChar;
 
 #[test]
 fn builds_correct() {

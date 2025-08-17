@@ -1,4 +1,4 @@
-use hangman::alphabetic_char::AlphabeticChar;
+use hangman::chars::alphabetic::AlphabeticChar;
 use hangman::errors::SecretWordError;
 use hangman::secret_word::SecretWord;
 use rstest::rstest;

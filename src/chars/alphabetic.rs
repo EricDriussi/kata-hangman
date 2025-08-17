@@ -1,5 +1,5 @@
 use crate::errors::CharError;
-use crate::guessed_char::GuessedChar;
+use crate::chars::guessed::GuessedChar;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq, Hash)]

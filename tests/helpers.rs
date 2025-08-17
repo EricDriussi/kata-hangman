@@ -1,4 +1,4 @@
-use hangman::alphabetic_char::AlphabeticChar;
+use hangman::chars::alphabetic::AlphabeticChar;
 use rstest_reuse::template;
 
 // TODO: why do I need this allow?

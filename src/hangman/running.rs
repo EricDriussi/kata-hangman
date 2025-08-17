@@ -1,4 +1,4 @@
-use crate::alphabetic_char::AlphabeticChar;
+use crate::chars::alphabetic::AlphabeticChar;
 use crate::failures::AllowedFailures;
 use crate::game_state::GameState;
 use crate::guessed_chars::GuessedChars;

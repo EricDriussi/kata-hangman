@@ -1,4 +1,4 @@
-use crate::alphabetic_char::AlphabeticChar;
+use crate::chars::alphabetic::AlphabeticChar;
 use std::fmt;
 
 #[derive(Debug, PartialEq, Eq)]

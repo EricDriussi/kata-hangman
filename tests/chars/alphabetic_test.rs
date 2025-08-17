@@ -1,9 +1,8 @@
-mod helpers;
-use hangman::alphabetic_char::AlphabeticChar;
+use crate::helpers::invalid_chars;
+use hangman::chars::alphabetic::AlphabeticChar;
 use hangman::errors::CharError;
-use helpers::invalid_chars;
 use rstest::rstest;
-use rstest_reuse::{self, *};
+use rstest_reuse::apply;
 
 #[apply(invalid_chars)]
 fn does_not_build_from_invalid_char(#[case] invalid_char: char) {
