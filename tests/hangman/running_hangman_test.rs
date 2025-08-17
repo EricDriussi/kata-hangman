@@ -1,6 +1,6 @@
 use crate::helpers::invalid_chars;
 use hangman::game_state::GameState;
-use hangman::hangman::generic_hangman::{Hangman, Running};
+use hangman::hangman::running_hangman::RunningHangman;
 use hangman::results::GuessResult;
 use rstest::rstest;
 use rstest_reuse::apply;
@@ -10,14 +10,14 @@ const VALID_WORD: &str = "aWordñ";
 
 #[test]
 fn starts_with_valid_word_and_limit() {
-    let game = Hangman::<Running>::start(VALID_WORD, VALID_ALLOWED_FAILURES);
+    let game = RunningHangman::start(VALID_WORD, VALID_ALLOWED_FAILURES);
 
     assert!(game.is_ok());
 }
 
 #[apply(invalid_chars)]
 fn does_not_accept_invalid_guesses(#[case] invalid_char: char) {
-    let game = Hangman::<Running>::start(VALID_WORD, VALID_ALLOWED_FAILURES).unwrap();
+    let game = RunningHangman::start(VALID_WORD, VALID_ALLOWED_FAILURES).unwrap();
 
     let (guess_result, _) = game.guess(invalid_char);
 
@@ -26,7 +26,7 @@ fn does_not_accept_invalid_guesses(#[case] invalid_char: char) {
 
 #[test]
 fn succeeds_when_guessing_correctly() {
-    let game = Hangman::<Running>::start("Abc", 1).unwrap();
+    let game = RunningHangman::start("Abc", 1).unwrap();
 
     let (guess_result, _) = game.guess('a');
 
@@ -35,7 +35,7 @@ fn succeeds_when_guessing_correctly() {
 
 #[test]
 fn warns_of_duplicate_when_repeating_a_correct_guess() {
-    let game = Hangman::<Running>::start("abc", 1).unwrap();
+    let game = RunningHangman::start("abc", 1).unwrap();
 
     let (_, game_state) = game.guess('a');
     let GameState::InProgress(game) = game_state else {
@@ -47,7 +47,7 @@ fn warns_of_duplicate_when_repeating_a_correct_guess() {
 }
 #[test]
 fn warns_of_duplicate_when_repeating_an_incorrect_guess() {
-    let game = Hangman::<Running>::start("abc", 2).unwrap();
+    let game = RunningHangman::start("abc", 2).unwrap();
 
     let (_, game_state) = game.guess('x');
     let GameState::InProgress(game) = game_state else {
@@ -60,7 +60,7 @@ fn warns_of_duplicate_when_repeating_an_incorrect_guess() {
 
 #[test]
 fn fails_when_guessing_incorrectly() {
-    let game = Hangman::<Running>::start("abc", 1).unwrap();
+    let game = RunningHangman::start("abc", 1).unwrap();
 
     let (guess_result, _) = game.guess('x');
 
@@ -69,7 +69,7 @@ fn fails_when_guessing_incorrectly() {
 
 #[test]
 fn game_is_lost_when_allowed_failures_are_surpassed() {
-    let game = Hangman::<Running>::start("abc", 1).unwrap();
+    let game = RunningHangman::start("abc", 1).unwrap();
 
     let (_, game_state) = game.guess('x');
 
@@ -78,7 +78,7 @@ fn game_is_lost_when_allowed_failures_are_surpassed() {
 
 #[test]
 fn game_is_won_when_word_is_guessed() {
-    let game = Hangman::<Running>::start("a", 1).unwrap();
+    let game = RunningHangman::start("a", 1).unwrap();
 
     let (_, game_state) = game.guess('a');
 
@@ -87,7 +87,7 @@ fn game_is_won_when_word_is_guessed() {
 
 #[test]
 fn shows_secret_word() {
-    let game = Hangman::<Running>::start("abc", 1).unwrap();
+    let game = RunningHangman::start("abc", 1).unwrap();
 
     let correct_char = 'a';
     let (_, game_state) = game.guess(correct_char);
@@ -104,7 +104,7 @@ fn shows_secret_word() {
 #[test]
 fn shows_remaining_failures() {
     let allowed_failures = 2;
-    let game = Hangman::<Running>::start("abc", allowed_failures).unwrap();
+    let game = RunningHangman::start("abc", allowed_failures).unwrap();
 
     let (_, game_state) = game.guess('x');
     let GameState::InProgress(game) = game_state else {
@@ -118,7 +118,7 @@ fn shows_remaining_failures() {
 
 #[test]
 fn shows_already_guessed_chars() {
-    let game = Hangman::<Running>::start("abc", 2).unwrap();
+    let game = RunningHangman::start("abc", 2).unwrap();
 
     let correct_char = 'a';
     let (_, game_state) = game.guess(correct_char);

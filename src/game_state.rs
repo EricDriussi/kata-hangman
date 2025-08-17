@@ -1,7 +1,8 @@
-use crate::hangman::generic_hangman::{Hangman, Running, Stopped};
+use crate::hangman::running_hangman::RunningHangman;
+use crate::hangman::stopped_hangman::StoppedHangman;
 
 pub enum GameState {
-    InProgress(Hangman<Running>),
-    Won(Hangman<Stopped>),
-    Lost(Hangman<Stopped>),
+    InProgress(RunningHangman),
+    Lost(StoppedHangman),
+    Won(StoppedHangman),
 }

@@ -1,5 +1,5 @@
 use hangman::game_state::GameState;
-use hangman::hangman::generic_hangman::{Hangman, Running};
+use hangman::hangman::running_hangman::RunningHangman;
 use hangman::results::GuessResult;
 use std::io;
 use std::thread::sleep;
@@ -7,11 +7,26 @@ use std::time::Duration;
 
 fn main() {
     clear_screen();
-    let game = start_game();
-    run_round(game);
+    play(init_game());
 }
 
-fn run_round(game: Hangman<Running>) {
+fn init_game() -> RunningHangman {
+    println!("Enter the secret word:");
+    let secret_word = read_stdin();
+
+    println!("Enter the allowed number of failures:");
+    let allowed_failures = read_int();
+
+    RunningHangman::start(&secret_word, allowed_failures).unwrap_or_else(|e| {
+        clear_screen();
+        println!("{e}");
+        println!("Try again...");
+        sleep(Duration::from_secs(1));
+        init_game()
+    })
+}
+
+fn play(game: RunningHangman) {
     clear_screen();
     println!("{game}");
     println!("\nTake a guess!");
@@ -30,7 +45,7 @@ fn run_round(game: Hangman<Running>) {
 
     match state {
         GameState::InProgress(running_game) => {
-            run_round(running_game);
+            play(running_game);
         }
         GameState::Won(stopped_game) => {
             clear_screen();
@@ -43,22 +58,6 @@ fn run_round(game: Hangman<Running>) {
             println!("{stopped_game}");
         }
     }
-}
-
-fn start_game() -> Hangman<Running> {
-    println!("Enter the secret word:");
-    let secret_word = read_stdin();
-
-    println!("Enter the allowed number of failures:");
-    let allowed_failures = read_int();
-
-    Hangman::<Running>::start(&secret_word, allowed_failures).unwrap_or_else(|e| {
-        clear_screen();
-        println!("{e}");
-        println!("Try again...");
-        sleep(Duration::from_secs(1));
-        start_game()
-    })
 }
 
 fn read_stdin() -> String {
