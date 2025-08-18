@@ -111,7 +111,7 @@ fn shows_already_guessed_chars() {
     };
 
     assert!(game.to_string().contains(&format!(
-        "\n\tCorrect guesses: {}\n\tIncorrect guesses: {}",
+        "\n\tCorrect guesses: {}\n\tFailed guesses: {}",
         correct_char.to_ascii_uppercase(),
         incorrect_char.to_ascii_uppercase()
     )));

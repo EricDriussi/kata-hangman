@@ -4,7 +4,7 @@ use hangman::results::GuessResult;
 use rstest::rstest;
 use rstest_reuse::apply;
 
-const VALID_ALLOWED_FAILURES: isize = 1;
+const VALID_ALLOWED_FAILURES: usize = 1;
 const VALID_WORD: &str = "aWordñ";
 
 #[test]

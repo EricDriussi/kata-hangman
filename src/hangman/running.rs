@@ -1,5 +1,4 @@
 use crate::chars::alphabetic::AlphabeticChar;
-use crate::failures::AllowedFailures;
 use crate::game_state::GameState;
 use crate::guessed_chars::GuessedChars;
 use crate::hangman::stopped::StoppedHangman;
@@ -10,7 +9,6 @@ use std::fmt;
 
 pub struct RunningHangman {
     pub(crate) secret_word: SecretWord,
-    pub(crate) failures: AllowedFailures,
     pub(crate) guessed_chars: GuessedChars,
 }
 
@@ -35,9 +33,8 @@ impl RunningHangman {
             }
             (GuessResult::Correct, GameState::InProgress(self))
         } else {
-            self.guessed_chars.add_incorrect(char);
-            self.failures.consume();
-            if !self.failures.any_left() {
+            self.guessed_chars.add_failed(char);
+            if self.guessed_chars.no_failures_available() {
                 return (
                     GuessResult::Incorrect,
                     GameState::Lost(StoppedHangman::from(self)),
@@ -49,9 +46,9 @@ impl RunningHangman {
 
     fn already_guessed(&self) -> String {
         format!(
-            "\n\tCorrect guesses: {}\n\tIncorrect guesses: {}",
+            "\n\tCorrect guesses: {}\n\tFailed guesses: {}",
             Self::format_guesses(self.guessed_chars.correct_guesses()),
-            Self::format_guesses(self.guessed_chars.incorrect_guesses())
+            Self::format_guesses(self.guessed_chars.failed_guesses())
         )
     }
 
@@ -70,7 +67,7 @@ impl fmt::Display for RunningHangman {
             f,
             "Secret word: {}\nRemaining failures: {}\nAlready guessed characters: {}",
             self.secret_word,
-            self.failures.remaining(),
+            self.guessed_chars.remaining(),
             self.already_guessed()
         )
     }

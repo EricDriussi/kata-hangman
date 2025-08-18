@@ -1,18 +1,17 @@
-use crate::failures::AllowedFailures;
 use crate::hangman::running::RunningHangman;
 use crate::secret_word::SecretWord;
 use std::fmt;
 
 pub struct StoppedHangman {
     secret_word: SecretWord,
-    failures: AllowedFailures,
+    remaining_failures: usize,
 }
 
 impl From<RunningHangman> for StoppedHangman {
     fn from(mut running_game: RunningHangman) -> Self {
         running_game.secret_word.reveal_word();
         StoppedHangman {
-            failures: running_game.failures,
+            remaining_failures: running_game.guessed_chars.remaining(),
             secret_word: running_game.secret_word,
         }
     }
@@ -20,19 +19,15 @@ impl From<RunningHangman> for StoppedHangman {
 
 impl fmt::Display for StoppedHangman {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let remaining_failures = match self.failures.remaining() {
+        let failures_msg = match self.remaining_failures {
             0 => String::new(),
             1 => "You could have failed one more guess\n".to_string(),
             _ => format!(
                 "You could have failed {} more guesses\n",
-                self.failures.remaining()
+                self.remaining_failures
             ),
         };
 
-        write!(
-            f,
-            "Secret word was: {}\n{}",
-            self.secret_word, remaining_failures,
-        )
+        write!(f, "Secret word was: {}\n{}", self.secret_word, failures_msg,)
     }
 }

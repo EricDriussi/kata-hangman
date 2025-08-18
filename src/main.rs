@@ -67,9 +67,9 @@ fn read_stdin() -> String {
     input.trim().to_string()
 }
 
-fn read_int() -> isize {
+fn read_int() -> usize {
     let input = read_stdin();
-    input.trim().parse::<isize>().unwrap_or_else(|_| {
+    input.trim().parse::<usize>().unwrap_or_else(|_| {
         println!("That's doesn't make sense... Try again!");
         read_int()
     })
