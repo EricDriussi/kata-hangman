@@ -72,14 +72,6 @@ fn does_not_reveal_char_not_in_word() {
 }
 
 #[test]
-fn reveals_whole_word() {
-    let mut secret_word = SecretWord::from("abc").unwrap();
-    secret_word.reveal_word();
-
-    assert_eq!(secret_word.to_string(), "ABC");
-}
-
-#[test]
 fn can_tell_if_all_chars_are_revealed() {
     let mut secret_word = SecretWord::from("abc").unwrap();
     secret_word.reveal_char(&AlphabeticChar::from('a').unwrap());

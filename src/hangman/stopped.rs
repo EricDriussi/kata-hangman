@@ -1,3 +1,4 @@
+use crate::chars::alphabetic::AlphabeticChar;
 use crate::hangman::running::RunningHangman;
 use crate::secret_word::SecretWord;
 use std::fmt;
@@ -7,13 +8,34 @@ pub struct StoppedHangman {
     remaining_failures: usize,
 }
 
+impl StoppedHangman {
+    fn new(secret_word: SecretWord, remaining_failures: usize) -> Self {
+        let mut stopped = Self {
+            secret_word,
+            remaining_failures,
+        };
+        stopped.brute_force_word();
+        stopped
+    }
+
+    fn brute_force_word(&mut self) {
+        let char_min = '\u{0000}';
+        let char_max = char::MAX;
+        (char_min..=char_max)
+            .filter_map(|c| AlphabeticChar::from(c).ok())
+            .filter(|c| self.secret_word.contains(c))
+            .collect::<Vec<_>>() // Filters are lazy, need to collect to close its borrow, seems wasteful
+            .into_iter()
+            .for_each(|c| self.secret_word.reveal_char(&c));
+    }
+}
+
 impl From<RunningHangman> for StoppedHangman {
-    fn from(mut running_game: RunningHangman) -> Self {
-        running_game.secret_word.reveal_word();
-        StoppedHangman {
-            remaining_failures: running_game.guessed_chars.remaining(),
-            secret_word: running_game.secret_word,
-        }
+    fn from(running_game: RunningHangman) -> Self {
+        StoppedHangman::new(
+            running_game.secret_word,
+            running_game.guessed_chars.remaining(),
+        )
     }
 }
 

@@ -1,7 +1,7 @@
-use hangman::game_state::GameState;
+use hangman::hangman::GameState;
 use hangman::hangman::factory::Hangman;
 use hangman::hangman::running::RunningHangman;
-use hangman::results::GuessResult;
+use hangman::hangman::GuessResult;
 use std::io;
 use std::thread::sleep;
 use std::time::Duration;

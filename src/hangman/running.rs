@@ -1,8 +1,8 @@
 use crate::chars::alphabetic::AlphabeticChar;
-use crate::game_state::GameState;
 use crate::guessed_chars::GuessedChars;
+use crate::hangman::GameState;
+use crate::hangman::GuessResult;
 use crate::hangman::stopped::StoppedHangman;
-use crate::results::GuessResult;
 use crate::secret_word::SecretWord;
 use std::collections::HashSet;
 use std::fmt;
@@ -13,7 +13,7 @@ pub struct RunningHangman {
 }
 
 impl RunningHangman {
-    pub fn guess(mut self, character: char) -> (GuessResult, GameState) {
+    pub fn guess(self, character: char) -> (GuessResult, GameState) {
         let Ok(char) = AlphabeticChar::from(character) else {
             return (GuessResult::Invalid, GameState::InProgress(self));
         };
@@ -23,25 +23,33 @@ impl RunningHangman {
         }
 
         if self.secret_word.contains(&char) {
-            self.secret_word.reveal_char(&char);
-            self.guessed_chars.add_correct(char);
-            if self.secret_word.is_revealed() {
-                return (
-                    GuessResult::Correct,
-                    GameState::Won(StoppedHangman::from(self)),
-                );
-            }
-            (GuessResult::Correct, GameState::InProgress(self))
+            self.handle_correct_guess(char)
         } else {
-            self.guessed_chars.add_failed(char);
-            if self.guessed_chars.no_failures_available() {
-                return (
-                    GuessResult::Incorrect,
-                    GameState::Lost(StoppedHangman::from(self)),
-                );
-            }
-            (GuessResult::Incorrect, GameState::InProgress(self))
+            self.handle_incorrect_guess(char)
         }
+    }
+
+    fn handle_correct_guess(mut self, char: AlphabeticChar) -> (GuessResult, GameState) {
+        self.secret_word.reveal_char(&char);
+        self.guessed_chars.add_correct(char);
+        if self.secret_word.is_revealed() {
+            return (
+                GuessResult::Correct,
+                GameState::Won(StoppedHangman::from(self)),
+            );
+        }
+        (GuessResult::Correct, GameState::InProgress(self))
+    }
+
+    fn handle_incorrect_guess(mut self, char: AlphabeticChar) -> (GuessResult, GameState) {
+        self.guessed_chars.add_failed(char);
+        if self.guessed_chars.no_failures_available() {
+            return (
+                GuessResult::Incorrect,
+                GameState::Lost(StoppedHangman::from(self)),
+            );
+        }
+        (GuessResult::Incorrect, GameState::InProgress(self))
     }
 
     fn already_guessed(&self) -> String {

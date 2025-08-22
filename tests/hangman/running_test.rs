@@ -1,6 +1,18 @@
-use hangman::game_state::GameState;
+use crate::helpers::invalid_chars;
 use hangman::hangman::factory::Hangman;
-use hangman::results::GuessResult;
+use hangman::hangman::GameState;
+use hangman::hangman::GuessResult;
+use rstest::rstest;
+use rstest_reuse::apply;
+
+#[apply(invalid_chars)]
+fn does_not_accept_invalid_guesses(#[case] invalid_char: char) {
+    let game = Hangman::start("abc", 1).unwrap();
+
+    let (guess_result, _) = game.guess(invalid_char);
+
+    assert!(matches!(guess_result, GuessResult::Invalid));
+}
 
 #[test]
 fn succeeds_when_guessing_correctly() {

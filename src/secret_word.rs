@@ -37,10 +37,6 @@ impl SecretWord {
             .for_each(SecretChar::reveal);
     }
 
-    pub fn reveal_word(&mut self) {
-        self.word.iter_mut().for_each(SecretChar::reveal);
-    }
-
     pub fn is_revealed(&self) -> bool {
         self.word.iter().all(SecretChar::is_guessed)
     }

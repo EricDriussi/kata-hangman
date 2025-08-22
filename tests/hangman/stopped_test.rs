@@ -1,4 +1,4 @@
-use hangman::game_state::GameState;
+use hangman::hangman::GameState;
 use hangman::hangman::factory::Hangman;
 use hangman::hangman::stopped::StoppedHangman;
 

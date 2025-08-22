@@ -1,24 +1,26 @@
 use crate::helpers::invalid_chars;
 use hangman::hangman::factory::Hangman;
-use hangman::results::GuessResult;
 use rstest::rstest;
 use rstest_reuse::apply;
 
-const VALID_ALLOWED_FAILURES: usize = 1;
-const VALID_WORD: &str = "aWordñ";
+#[apply(invalid_chars)]
+fn does_not_start_with_invalid_word(#[case] invalid_char: char) {
+    let word = format!("aWord{invalid_char}ñ");
+    let game = Hangman::start(&word, 1);
 
-#[test]
-fn starts_with_valid_word_and_limit() {
-    let game = Hangman::start(VALID_WORD, VALID_ALLOWED_FAILURES);
-
-    assert!(game.is_ok());
+    assert!(game.is_err());
 }
 
-#[apply(invalid_chars)]
-fn does_not_accept_invalid_guesses(#[case] invalid_char: char) {
-    let game = Hangman::start(VALID_WORD, VALID_ALLOWED_FAILURES).unwrap();
+#[test]
+fn does_not_start_with_no_allowed_failures() {
+    let game = Hangman::start("aWordñ", 0);
 
-    let (guess_result, _) = game.guess(invalid_char);
+    assert!(game.is_err());
+}
 
-    assert!(matches!(guess_result, GuessResult::Invalid));
+#[test]
+fn starts_with_valid_input() {
+    let game = Hangman::start("aWordñ", 1);
+
+    assert!(game.is_ok());
 }
