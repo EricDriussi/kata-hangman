@@ -8,8 +8,8 @@ use std::collections::HashSet;
 use std::fmt;
 
 pub struct RunningHangman {
-    pub(crate) secret_word: SecretWord,
-    pub(crate) guessed_chars: GuessedChars,
+    pub secret_word: SecretWord,
+    pub guessed_chars: GuessedChars,
 }
 
 impl RunningHangman {
