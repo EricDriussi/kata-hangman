@@ -1,5 +1,5 @@
-use crate::errors::StartError;
 use crate::guessed_chars::GuessedChars;
+use crate::hangman::error::StartError;
 use crate::hangman::running::RunningHangman;
 use crate::secret_word::SecretWord;
 

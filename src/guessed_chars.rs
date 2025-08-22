@@ -12,7 +12,7 @@ pub struct GuessedChars {
 impl GuessedChars {
     pub fn allowed_failures(limit: usize) -> Result<Self, AllowedFailuresError> {
         if limit < 1 {
-            return Err(AllowedFailuresError::NotEnoughGuesses);
+            return Err(AllowedFailuresError::NotEnough);
         }
 
         Ok(GuessedChars {

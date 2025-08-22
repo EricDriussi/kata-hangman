@@ -1,6 +1,7 @@
 use crate::hangman::running::RunningHangman;
 use crate::hangman::stopped::StoppedHangman;
 
+mod error;
 pub mod factory;
 pub mod running;
 pub mod stopped;

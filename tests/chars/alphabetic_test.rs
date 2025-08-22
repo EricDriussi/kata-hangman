@@ -1,6 +1,6 @@
 use crate::helpers::invalid_chars;
 use hangman::chars::alphabetic::AlphabeticChar;
-use hangman::errors::CharError;
+use hangman::chars::error::CharError;
 use rstest::rstest;
 use rstest_reuse::apply;
 
@@ -8,7 +8,7 @@ use rstest_reuse::apply;
 fn does_not_build_from_invalid_char(#[case] invalid_char: char) {
     let alphabetic_char = AlphabeticChar::from(invalid_char);
 
-    assert!(alphabetic_char.is_err_and(|e| matches!(e, CharError::NonAlphabeticChar)));
+    assert!(alphabetic_char.is_err_and(|e| matches!(e, CharError::NonAlphabetic)));
 }
 
 #[test]

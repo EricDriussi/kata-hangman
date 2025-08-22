@@ -11,7 +11,7 @@ pub struct SecretWord {
 impl SecretWord {
     pub fn from(word: &str) -> Result<Self, SecretWordError> {
         if word.is_empty() {
-            return Err(SecretWordError::EmptySecretWord);
+            return Err(SecretWordError::Empty);
         }
 
         Ok(SecretWord {

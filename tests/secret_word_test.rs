@@ -11,7 +11,7 @@ use helpers::invalid_chars;
 fn does_not_build_without_word() {
     let secret_word = SecretWord::from("");
 
-    assert!(secret_word.is_err_and(|e| matches!(e, SecretWordError::EmptySecretWord)));
+    assert!(secret_word.is_err_and(|e| matches!(e, SecretWordError::Empty)));
 }
 
 #[apply(invalid_chars)]
@@ -20,7 +20,7 @@ fn does_not_build_with_invalid_chars_in_word(#[case] invalid_char: char) {
 
     let secret_word = SecretWord::from(&invalid_word);
 
-    assert!(secret_word.is_err_and(|e| matches!(e, SecretWordError::NonAlphabeticCharacters)));
+    assert!(secret_word.is_err_and(|e| matches!(e, SecretWordError::NonAlphabeticChars)));
 }
 
 #[test]

@@ -1,4 +1,4 @@
-use crate::errors::CharError;
+use crate::chars::error::CharError;
 use crate::chars::guessed::GuessedChar;
 use std::fmt;
 
@@ -10,7 +10,7 @@ pub struct AlphabeticChar {
 impl AlphabeticChar {
     pub fn from(c: char) -> Result<Self, CharError> {
         if !c.is_alphabetic() {
-            return Err(CharError::NonAlphabeticChar);
+            return Err(CharError::NonAlphabetic);
         }
         Ok(AlphabeticChar {
             char: c.to_ascii_uppercase(),
